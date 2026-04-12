@@ -11,24 +11,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearch } from "../../context/SearchContext";
 
-const feeData = [
-  { name: 'JAN 25', actual: 450000 },
-  { name: 'FEB 25', actual: 480000 },
-  { name: 'MAR 25', actual: 520000 },
-  { name: 'APR 25', actual: 500000 },
-  { name: 'MAY 25', actual: 550000 },
-  { name: 'JUN 25', actual: 600000 },
-  { name: 'JUL 25', actual: 580000 },
-  { name: 'AUG 25', actual: 620000 },
-  { name: 'SEP 25', actual: 650000 },
-  { name: 'OCT 25', actual: 700000 },
-  { name: 'NOV 25', actual: 750000 },
-  { name: 'DEC 25', actual: 800000 },
-  { name: 'JAN 26', actual: 850000 },
-  { name: 'FEB 26', actual: 920000 },
-  { name: 'MAR 26', actual: 950000 },
-  { name: 'APR 26', actual: 980000 },
-];
+import { useAdminData } from "../../context/AdminDataContext";
 
 const ENROLLMENT_CATEGORIES = [
   { name: 'B-Tech (CS)', color: '#4F46E5' },
@@ -39,33 +22,6 @@ const ENROLLMENT_CATEGORIES = [
   { name: 'BCA', color: '#EF4444' },
 ];
 
-const enrollmentStatsByMonth = {
-  "2025-0": [35, 25, 15, 10, 8, 7], // JAN 25
-  "2025-1": [34, 26, 14, 11, 8, 7],
-  "2025-2": [33, 27, 13, 12, 8, 7],
-  "2025-3": [36, 24, 16, 9, 8, 7],
-  "2025-4": [32, 28, 12, 13, 8, 7],
-  "2025-5": [38, 22, 18, 7, 8, 7],
-  "2025-6": [30, 30, 10, 15, 8, 7],
-  "2025-7": [40, 20, 20, 5, 8, 7],
-  "2025-8": [37, 23, 17, 8, 8, 7],
-  "2025-9": [35, 25, 15, 10, 8, 7],
-  "2025-10": [34, 26, 14, 11, 8, 7],
-  "2025-11": [33, 27, 13, 12, 8, 7], // DEC 25
-  "2026-0": [42, 18, 22, 3, 9, 6],   // JAN 26
-  "2026-1": [40, 20, 20, 5, 10, 5],
-  "2026-2": [38, 22, 18, 7, 11, 4],
-  "2026-3": [45, 15, 25, 2, 8, 5],   // APR 26
-};
-
-const enrollmentDataMapping = (year, month) => {
-  const key = `${year}-${month}`;
-  const values = enrollmentStatsByMonth[key] || [45, 15, 25, 2, 8, 5];
-  return ENROLLMENT_CATEGORIES.map((cat, i) => ({
-    ...cat,
-    value: values[i]
-  }));
-};
 
 const attendanceData = [
   { name: 'SEP', value: 85 },
@@ -261,43 +217,60 @@ const MONTHS = ["January", "February", "March", "April", "May", "June", "July", 
 
 export default function AdminHome() {
   const { searchQuery } = useSearch();
+  const { 
+    students, 
+    fees, 
+    courses, 
+    attendanceLogs, 
+    feeTrends, 
+    attendanceTrends,
+    getEnrollmentStats 
+  } = useAdminData();
+
   const [faculties, setFaculties] = useState(() => {
     const saved = localStorage.getItem('admin_faculty_overview');
     return saved ? JSON.parse(saved) : initialFaculties;
   });
   const navigate = useNavigate();
-  const [academicYear, setAcademicYear] = useState(new Date().getFullYear().toString());
-  
-  // Student Enrollment filters
-  const [enrollmentYear, setEnrollmentYear] = useState(new Date().getFullYear());
-  const [enrollmentMonth, setEnrollmentMonth] = useState(new Date().getMonth());
+  const [enrollmentYear, setEnrollmentYear] = useState(2026);
+  const [enrollmentMonth, setEnrollmentMonth] = useState(3); // April
 
-  const currentEnrollmentData = useMemo(() => {
-    return enrollmentDataMapping(enrollmentYear, enrollmentMonth);
-  }, [enrollmentYear, enrollmentMonth]);
+  const currentEnrollmentData = useMemo(() => 
+    getEnrollmentStats(enrollmentYear, enrollmentMonth), 
+  [enrollmentYear, enrollmentMonth, getEnrollmentStats]);
 
-  const attendanceChartData = useMemo(() => {
-    const baseData = [
-      { name: 'JUL', value: 82 },
-      { name: 'AUG', value: 88 },
-      { name: 'SEP', value: 85 },
-      { name: 'OCT', value: 92 },
-      { name: 'NOV', value: 88 },
-      { name: 'DEC', value: 95 },
-      { name: 'JAN', value: 94 },
-      { name: 'FEB', value: 96 },
-      { name: 'MAR', value: 91 },
-      { name: 'APR', value: 87 },
-      { name: 'MAY', value: 83 },
-      { name: 'JUN', value: 89 },
-    ];
-    // Dynamic seed based on year relative to 2024
-    const seed = academicYear === '2026' ? 1.1 : (academicYear === '2025' ? 1.05 : 1);
-    return baseData.map(item => ({
-      ...item,
-      value: Math.min(100, Math.round(item.value * seed))
-    }));
-  }, [academicYear]);
+  // Dynamic Dashboard Stats
+  const statsValues = useMemo(() => {
+    // 1. Total Students
+    const totalStudents = students.length;
+
+    // 2. Attendance %
+    const presentCount = attendanceLogs.filter(l => l.status === "Present").length;
+    const attendancePct = attendanceLogs.length > 0 
+      ? Math.round((presentCount / attendanceLogs.length) * 100) 
+      : 0;
+
+    // 3. Total Courses
+    const totalCourses = courses.length;
+    const activeCourses = courses.filter(c => c.status === "Active").length;
+
+    // 4. Fees Collected
+    const totalFees = fees.reduce((sum, f) => sum + f.paid, 0);
+    const formatFees = (val) => {
+        if (val >= 10000000) return `₹${(val / 10000000).toFixed(1)}Cr`;
+        if (val >= 100000) return `₹${(val / 100000).toFixed(1)}L`;
+        if (val >= 1000) return `₹${(val / 1000).toFixed(1)}K`;
+        return `₹${val}`;
+    };
+
+    return {
+        students: totalStudents.toLocaleString(),
+        attendance: `${attendancePct}%`,
+        courses: totalCourses.toString(),
+        activeCourses: `${activeCourses} Active`,
+        fees: formatFees(totalFees)
+    };
+  }, [students, attendanceLogs, courses, fees]);
 
   useEffect(() => {
     try {
@@ -329,10 +302,10 @@ export default function AdminHome() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-14">
-        <StatCard title="Total Students" value="2,450" badge="+12.5%" icon={Users} color="bg-indigo-600" />
-        <StatCard title="Attendance %" value="92%" badge="Optimal" icon={CheckCircle} color="bg-emerald-600" />
-        <StatCard title="Total Courses" value="48" badge="8 Active" icon={BookOpen} color="bg-amber-600" />
-        <StatCard title="Fees Collected" value="$1.2M" badge="Target Met" icon={CreditCard} color="bg-indigo-600" />
+        <StatCard title="Total Students" value={statsValues.students} badge="+12.5%" icon={Users} color="bg-indigo-600" />
+        <StatCard title="Attendance %" value={statsValues.attendance} badge="Optimal" icon={CheckCircle} color="bg-emerald-600" />
+        <StatCard title="Total Courses" value={statsValues.courses} badge={statsValues.activeCourses} icon={BookOpen} color="bg-amber-600" />
+        <StatCard title="Fees Collected" value={statsValues.fees} badge="Target Met" icon={CreditCard} color="bg-indigo-600" />
       </div>
 
       {/* Middle Grid: Charts */}
@@ -342,14 +315,14 @@ export default function AdminHome() {
            <div className="flex justify-between items-start mb-14">
               <div>
                  <h3 className="text-2xl font-black text-on-surface tracking-tight mb-2">Fee Collection Trends</h3>
-                 <p className="text-xs font-bold text-secondary opacity-60">Projection vs Actual Collection for FY {academicYear}</p>
+                 <p className="text-xs font-bold text-secondary opacity-60">Projection vs Actual Collection for FY 2025-26</p>
               </div>
            </div>
            
            <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
               <div className="h-80 min-w-[1200px]">
                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={feeData} margin={{ top: 10, right: 30, left: 20, bottom: 20 }}>
+                    <AreaChart data={feeTrends} margin={{ top: 10, right: 30, left: 20, bottom: 20 }}>
                        <defs>
                          <linearGradient id="colorWave" x1="0" y1="0" x2="0" y2="1">
                            <stop offset="5%" stopColor="#4F46E5" stopOpacity={0.2}/>
@@ -380,38 +353,50 @@ export default function AdminHome() {
                        >
                           <Label value="Amount Collected (₹)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={10} fontSize={9} fontWeight={900} fill="#94A3B8" />
                        </YAxis>
-                       <Tooltip 
-                          cursor={{ stroke: '#4F46E5', strokeWidth: 1 }} 
-                          contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 40px rgba(0,0,0,0.05)', padding: '12px' }}
-                          itemStyle={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}
-                          labelStyle={{ fontSize: '10px', fontWeight: 900, marginBottom: '4px', color: '#64748B' }}
-                          formatter={(value) => [`₹${value.toLocaleString()}`, "Collection Amount"]}
-                       />
-                       <Legend 
-                          verticalAlign="top" 
-                          align="right" 
-                          iconType="circle"
-                          content={({ payload }) => (
-                             <div className="flex gap-4 mb-8">
-                                {payload.map((entry, index) => (
-                                   <div key={`item-${index}`} className="flex items-center gap-2">
-                                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Collection Amount</span>
-                                   </div>
-                                ))}
-                             </div>
-                          )}
-                       />
-                       <Area 
-                          type="monotone" 
-                          dataKey="actual" 
-                          stroke="#4F46E5" 
-                          strokeWidth={4} 
-                          fillOpacity={1} 
-                          fill="url(#colorWave)" 
-                          dot={{ r: 4, fill: '#FFFFFF', stroke: '#4F46E5', strokeWidth: 2 }}
-                          activeDot={{ r: 6, fill: '#4F46E5', stroke: '#FFFFFF', strokeWidth: 2 }}
-                       />
+                        <Tooltip 
+                           cursor={{ stroke: '#4F46E5', strokeWidth: 1 }} 
+                           contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 40px rgba(0,0,0,0.05)', padding: '12px' }}
+                           itemStyle={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}
+                           labelStyle={{ fontSize: '10px', fontWeight: 900, marginBottom: '4px', color: '#64748B' }}
+                           formatter={(value, name) => [`₹${value.toLocaleString()}`, name === 'actual' ? "Actual Collection" : "Projected Goal"]}
+                        />
+                        <Legend 
+                           verticalAlign="top" 
+                           align="right" 
+                           iconType="circle"
+                           content={({ payload }) => (
+                              <div className="flex gap-4 mb-8">
+                                 {payload.map((entry, index) => (
+                                    <div key={`item-${index}`} className="flex items-center gap-2">
+                                       <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
+                                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                          {entry.dataKey === 'actual' ? "Actual Collection" : "Projected Goal"}
+                                       </span>
+                                    </div>
+                                 ))}
+                              </div>
+                           )}
+                        />
+                        <Area 
+                           type="monotone" 
+                           dataKey="projected" 
+                           stroke="#94A3B8" 
+                           strokeWidth={2} 
+                           strokeDasharray="5 5"
+                           fill="transparent" 
+                           dot={false}
+                           activeDot={{ r: 4, fill: '#94A3B8' }}
+                        />
+                        <Area 
+                           type="monotone" 
+                           dataKey="actual" 
+                           stroke="#4F46E5" 
+                           strokeWidth={4} 
+                           fillOpacity={1} 
+                           fill="url(#colorWave)" 
+                           dot={{ r: 4, fill: '#FFFFFF', stroke: '#4F46E5', strokeWidth: 2 }}
+                           activeDot={{ r: 6, fill: '#4F46E5', stroke: '#FFFFFF', strokeWidth: 2 }}
+                        />
                     </AreaChart>
                  </ResponsiveContainer>
               </div>
@@ -467,9 +452,9 @@ export default function AdminHome() {
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                  <span className="text-4xl font-black text-on-surface tracking-tighter leading-none">
-                    {currentEnrollmentData.reduce((acc, curr) => acc + curr.value, 0)}%
+                    {currentEnrollmentData.reduce((acc, curr) => acc + curr.value, 0)}
                  </span>
-                 <span className="text-[10px] font-black text-secondary uppercase tracking-widest mt-2">Distribution</span>
+                 <span className="text-[10px] font-black text-secondary uppercase tracking-widest mt-2">Students</span>
               </div>
            </div>
 
@@ -498,23 +483,14 @@ export default function AdminHome() {
       <div className="bg-white rounded-[40px] p-12 border border-slate-200 shadow-sm shadow-black/5 mb-14">
         <div className="flex justify-between items-start mb-14">
            <h3 className="text-2xl font-black text-on-surface tracking-tight leading-none uppercase">Monthly Attendance Overview</h3>
-           <div className="px-5 py-2 bg-slate-50 flex items-center gap-2 rounded-full cursor-pointer hover:bg-slate-100 transition-colors">
-              <select 
-                value={academicYear} 
-                onChange={(e) => setAcademicYear(e.target.value)}
-                className="bg-transparent border-none outline-none text-secondary text-[10px] font-black uppercase tracking-widest cursor-pointer appearance-none"
-              >
-                <option value="2024">Academic Year 2024</option>
-                <option value="2025">Academic Year 2025</option>
-                <option value="2026">Academic Year 2026</option>
-              </select>
-              <ChevronDown className="w-3 h-3 text-secondary" />
+           <div className="px-5 py-2 bg-slate-50 flex items-center gap-2 rounded-full">
+              <span className="text-secondary text-[10px] font-black uppercase tracking-widest">Jan 2025 — Apr 2026</span>
            </div>
         </div>
         <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-           <div className="h-64 min-w-[1000px]">
+           <div className="h-64 min-w-[1500px]">
               <ResponsiveContainer width="100%" height="100%">
-                 <BarChart data={attendanceChartData}>
+                 <BarChart data={attendanceTrends}>
                     <XAxis dataKey="name" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} dy={20} />
                     <Tooltip 
                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 40px rgba(0,0,0,0.05)', padding: '12px' }}
@@ -522,7 +498,18 @@ export default function AdminHome() {
                        labelStyle={{ fontSize: '10px', fontWeight: 900, marginBottom: '4px', color: '#64748B' }}
                        formatter={(value) => [`${value}%`, "Attendance"]}
                     />
-                    <Bar dataKey="value" fill="#E2E8F0" radius={[4, 4, 0, 0]} barSize={32} />
+                    <Bar 
+                        dataKey="value" 
+                        fill="#E2E8F0" 
+                        radius={[6, 6, 0, 0]} 
+                        barSize={40}
+                        shape={(props) => {
+                            const { fill, x, y, width, height } = props;
+                            // Dynamic color based on attendance %
+                            const color = props.value >= 90 ? '#10B981' : (props.value >= 80 ? '#4F46E5' : '#F59E0B');
+                            return <rect x={x} y={y} width={width} height={height} fill={color} rx={6} ry={6} />;
+                        }}
+                    />
                  </BarChart>
               </ResponsiveContainer>
            </div>

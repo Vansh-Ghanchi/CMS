@@ -9,98 +9,10 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 
-const INITIAL_FEE_STUDENTS = [
-  { id: "STU-1001", name: "Ayesha Khan", institute: "GIT", course: "B-Tech (CS)", totalFees: 40000, paid: 30000, remaining: 10000, dueDate: "15 May 2024", status: "Pending", 
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 4", fees: 10000, paid: 0, remaining: 10000, status: "Pending" },
-    ],
-    history: [
-      { date: "10 Oct 2023", amount: 10000, method: "Bank Transfer", status: "Success" },
-      { date: "12 Dec 2023", amount: 10000, method: "Credit Card", status: "Success" },
-      { date: "15 Jan 2024", amount: 10000, method: "Online Banking", status: "Success" },
-    ]
-  },
-  { id: "STU-1002", name: "Muhammad Ali", institute: "GIT", course: "B-Tech (CSE)", totalFees: 40000, paid: 40000, remaining: 0, dueDate: "20 May 2024", status: "Paid",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 4", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-    ],
-    history: [
-      { date: "10 Oct 2023", amount: 10000, method: "Cash", status: "Success" },
-      { date: "15 Dec 2023", amount: 10000, method: "Bank Transfer", status: "Success" },
-      { date: "20 Jan 2024", amount: 20000, method: "Online Banking", status: "Success" },
-    ]
-  },
-  { id: "STU-1003", name: "Zainab Fatima", institute: "GICSA", course: "BSC (IT)", totalFees: 40000, paid: 25000, remaining: 15000, dueDate: "05 May 2024", status: "Overdue",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 5000, remaining: 5000, status: "Overdue" },
-      { sem: "Sem 4", fees: 10000, paid: 0, remaining: 10000, status: "Pending" },
-    ],
-    history: [
-      { date: "12 Oct 2023", amount: 10000, method: "Credit Card", status: "Success" },
-      { date: "18 Dec 2023", amount: 10000, method: "Cash", status: "Success" },
-      { date: "05 Feb 2024", amount: 5000, method: "Online Banking", status: "Success" },
-    ]
-  },
-  { id: "STU-1004", name: "Hamza Ahmed", institute: "GIT", course: "B-Tech (AI)", totalFees: 30000, paid: 20000, remaining: 10000, dueDate: "10 May 2024", status: "Pending",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 0, remaining: 10000, status: "Pending" },
-    ],
-    history: [
-      { date: "20 Sep 2023", amount: 10000, method: "Bank Transfer", status: "Success" },
-      { date: "15 Nov 2023", amount: 10000, method: "Bank Transfer", status: "Success" },
-    ]
-  },
-  { id: "STU-1005", name: "Sara Siddiqui", institute: "GICSA", course: "MSC (IT) INT", totalFees: 50000, paid: 50000, remaining: 0, dueDate: "15 Jun 2024", status: "Paid",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 4", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 5", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-    ],
-    history: [
-      { date: "01 Sep 2023", amount: 20000, method: "Online Banking", status: "Success" },
-      { date: "01 Jan 2024", amount: 30000, method: "Cash", status: "Success" },
-    ]
-  },
-  { id: "STU-1006", name: "Bilal Hussain", institute: "GICSA", course: "BCA", totalFees: 40000, paid: 10000, remaining: 30000, dueDate: "01 May 2024", status: "Overdue",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 0, remaining: 10000, status: "Overdue" },
-    ],
-    history: [{ date: "15 Oct 2023", amount: 10000, method: "Bank Transfer", status: "Success" }]
-  },
-  { id: "STU-1007", name: "Fatima Noor", institute: "GIT", course: "B-Tech (CS)", totalFees: 40000, paid: 20000, remaining: 20000, dueDate: "10 Jun 2024", status: "Pending",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 0, remaining: 10000, status: "Pending" },
-    ],
-    history: [{ date: "12 Jan 2024", amount: 20000, method: "Bank Transfer", status: "Success" }]
-  },
-  { id: "STU-1008", name: "Omar Farooq", institute: "GICSA", course: "BSC (IT)", totalFees: 30000, paid: 30000, remaining: 0, dueDate: "20 Jun 2024", status: "Paid",
-    semesters: [
-      { sem: "Sem 1", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 2", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-      { sem: "Sem 3", fees: 10000, paid: 10000, remaining: 0, status: "Paid" },
-    ],
-    history: [{ date: "15 Feb 2024", amount: 30000, method: "Cash", status: "Success" }]
-  },
-];
-
+import { useAdminData } from "../../../context/AdminDataContext";
 
 export default function FeesManagement() {
-  const [students, setStudents] = useState(INITIAL_FEE_STUDENTS);
+  const { fees: students, setFees: setStudents } = useAdminData();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
@@ -236,10 +148,27 @@ export default function FeesManagement() {
   const rows = table.getRowModel().rows;
   const currentRows = rows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const stats = [
-    { label: "Total Collection", val: "₹1.2M", icon: TrendingUp, color: "bg-emerald-50 text-emerald-600" },
-    { label: "Pending Fees", val: "₹12.4k", icon: AlertTriangle, color: "bg-amber-50 text-amber-600" },
-  ];
+  const stats = useMemo(() => {
+    const totalCollection = students.reduce((acc, curr) => acc + (curr.paid || 0), 0);
+    const pendingFees = students.reduce((acc, curr) => acc + (curr.remaining || 0), 0);
+    
+    return [
+      { 
+        label: "Total Collection", 
+        val: `₹${(totalCollection / 100000).toFixed(2)}L`, // Showing in Lakhs for M-like feel but accurate
+        subVal: `₹${totalCollection.toLocaleString()}`, 
+        icon: TrendingUp, 
+        color: "bg-emerald-50 text-emerald-600" 
+      },
+      { 
+        label: "Pending Fees", 
+        val: `₹${(pendingFees / 1000).toFixed(1)}k`, 
+        subVal: `₹${pendingFees.toLocaleString()}`,
+        icon: AlertTriangle, 
+        color: "bg-amber-50 text-amber-600" 
+      },
+    ];
+  }, [students]);
 
   const courseOptions = [...new Set(INITIAL_FEE_STUDENTS.map(s => s.course))];
 

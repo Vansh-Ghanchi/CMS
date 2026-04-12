@@ -10,112 +10,7 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 
-const studentDataItems = [
-  { 
-    studentId: "STU-1001",
-    name: "Ayesha Khan", 
-    email: "ayesha.khan@email.com", 
-    phone: "+92 321 1234567",
-    institute: "GIT",
-    course: "B-Tech (CS)", 
-    admissionDate: "15 Jan 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "123 University Road, Lahore",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1002",
-    name: "Muhammad Ali", 
-    email: "ali.muhammad@email.com", 
-    phone: "+92 322 7654321",
-    institute: "GIT",
-    course: "B-Tech (CSE)", 
-    admissionDate: "20 Feb 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "45-B, Gulberg III, Lahore",
-    avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1003",
-    name: "Zainab Fatima", 
-    email: "zainab.fatima@email.com", 
-    phone: "+92 323 1122334",
-    institute: "GICSA",
-    course: "BSC (IT)", 
-    admissionDate: "10 Mar 2024",
-    date: "12 Apr 2024",
-    status: "Inactive", 
-    address: "Model Town, House #12, Lahore",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1004",
-    name: "Hamza Ahmed", 
-    email: "hamza.ahmed@email.com", 
-    phone: "+92 324 5566778",
-    institute: "GIT",
-    course: "B-Tech (AI)", 
-    admissionDate: "05 Apr 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "Johar Town, Block R1, Lahore",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1005",
-    name: "Sara Siddiqui", 
-    email: "sara.siddiqui@email.com", 
-    phone: "+92 325 9988776",
-    institute: "GICSA",
-    course: "MSC (IT) INT", 
-    admissionDate: "18 Apr 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "DHA Phase 5, Block G, Lahore",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1006",
-    name: "Bilal Hussain", 
-    email: "bilal.h@email.com", 
-    phone: "+92 326 1122334",
-    institute: "GICSA",
-    course: "BCA", 
-    admissionDate: "10 May 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "Gulberg Homes, Lahore",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1007",
-    name: "Fatima Noor", 
-    email: "fatima.noor@email.com", 
-    phone: "+92 327 5544332",
-    institute: "GIT",
-    course: "B-Tech (CS)", 
-    admissionDate: "12 Jan 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "Askari 11, Lahore",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-  { 
-    studentId: "STU-1008",
-    name: "Omar Farooq", 
-    email: "omar.f@email.com", 
-    phone: "+92 328 9900112",
-    institute: "GICSA",
-    course: "BSC (IT)", 
-    admissionDate: "15 Feb 2024",
-    date: "12 Apr 2024",
-    status: "Active", 
-    address: "Defence Phase 4, Lahore",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-  },
-];
+import { useAdminData } from "../../../context/AdminDataContext";
 
 const StatCardShort = ({ icon: Icon, title, value, subtext, color }) => (
   <div className="bg-white rounded-[20px] p-6 flex items-center gap-6 border border-slate-200 shadow-sm flex-1">
@@ -279,10 +174,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, studentName }) =>
 export default function StudentManagement() {
   const { searchQuery, setSearchQuery } = useSearch();
   const [localSearch, setLocalSearch] = useState("");
-  const [students, setStudents] = useState(() => {
-    const saved = localStorage.getItem('admin_students_list_v3');
-    return saved ? JSON.parse(saved) : studentDataItems;
-  });
+  const { students, setStudents } = useAdminData();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [sorting, setSorting] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -304,7 +196,7 @@ export default function StudentManagement() {
   };
 
   useEffect(() => {
-    localStorage.setItem('admin_students_list_v3', JSON.stringify(students));
+    localStorage.setItem('admin_students_list_v4', JSON.stringify(students));
   }, [students]);
 
   const filteredStudents = useMemo(() => {
@@ -440,14 +332,22 @@ export default function StudentManagement() {
     if (selectedStudent?.studentId === updatedData.studentId) setSelectedStudent(updatedData);
   };
 
+  const currentMonthShort = new Date().toLocaleString('en-US', { month: 'short' });
+  const currentYearStr = new Date().getFullYear().toString();
+  const newAdmissionsCount = students.filter(s => 
+    s.admissionDate && 
+    s.admissionDate.includes(currentMonthShort) && 
+    s.admissionDate.includes(currentYearStr)
+  ).length;
+
   return (
     <AdminLayout>
       {/* 1. Header Stats Row */}
       <div className="flex flex-col md:flex-row gap-6 mb-12">
-        <StatCardShort icon={Users} title="Total Students" value={students.length} subtext="All registered students" color="bg-indigo-600" />
+        <StatCardShort icon={Users} title="Total Students" value={students.filter(s => s.institute === "GIT" || s.institute === "GICSA").length} subtext="All registered students" color="bg-indigo-600" />
         <StatCardShort icon={UserCheck} title="Active Students" value={students.filter(s => s.status === 'Active').length} subtext="Currently active students" color="bg-emerald-600" />
         <StatCardShort icon={Users} title="Inactive Students" value={students.filter(s => s.status === 'Inactive').length} subtext="Currently inactive students" color="bg-rose-600" />
-        <StatCardShort icon={UserPlus} title="New Admissions" value="125" subtext="This month" color="bg-Yellow" />
+        <StatCardShort icon={UserPlus} title="New Admissions" value={newAdmissionsCount} subtext="This month" color="bg-Yellow" />
       </div>
 
       {/* 2. Search & Filter Bar */}

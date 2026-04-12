@@ -9,27 +9,10 @@ import {
   getSortedRowModel,
 } from "@tanstack/react-table";
 
-const INITIAL_COURSES = [
-  { id: "CRS-1001", name: "BS Computer Science", duration: "4 Years", faculty: "Prof. Wilson", students: 450, status: "Active", description: "Comprehensive study of computer systems and software development.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1002", name: "BS Software Engineering", duration: "4 Years", faculty: "Dr. Chen", students: 280, status: "Active", description: "Focus on systematic development of large-scale software systems.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1003", name: "BS Information Technology", duration: "4 Years", faculty: "Prof. Harrison", students: 320, status: "Inactive", description: "Managing and implementing information systems in organizations.", startDate: "01 Sep 2022", endDate: "30 Jun 2026" },
-  { id: "CRS-1004", name: "BBA", duration: "4 Years", faculty: "Dr. Gilbert", students: 150, status: "Active", description: "Foundational business management and administration studies.", startDate: "15 Jan 2024", endDate: "15 Dec 2027" },
-  { id: "CRS-1005", name: "BS Data Science", duration: "4 Years", faculty: "Prof. Sarah", students: 180, status: "Active", description: "Extracting insights from complex structured and unstructured data.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1006", name: "Mechanical Engineering", duration: "4 Years", faculty: "Prof. James", students: 210, status: "Active", description: "Design, analysis, and manufacturing of mechanical systems.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1007", name: "Electrical Engineering", duration: "4 Years", faculty: "Dr. Robert", students: 190, status: "Active", description: "Study and application of electricity, electronics, and electromagnetism.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1008", name: "Cyber Security", duration: "2 Years", faculty: "Prof. David", students: 120, status: "Inactive", description: "Protecting systems and networks from digital attacks.", startDate: "15 Aug 2023", endDate: "15 Aug 2025" },
-];
-
-const ENROLLED_STUDENTS = [
-  { name: "Ayesha Khan", id: "STU-1001", email: "ayesha@campus.edu", attendance: 85 },
-  { name: "Muhammad Ali", id: "STU-1002", email: "m.ali@campus.edu", attendance: 92 },
-  { name: "Zainab Fatima", id: "STU-1003", email: "zainab@campus.edu", attendance: 65 },
-  { name: "Hamza Ahmed", id: "STU-1004", email: "hamza@campus.edu", attendance: 88 },
-  { name: "Sara Siddiqui", id: "STU-1005", email: "sara@campus.edu", attendance: 78 },
-];
+import { useAdminData } from "../../../context/AdminDataContext";
 
 export default function CourseManagement() {
-  const [courses, setCourses] = useState(INITIAL_COURSES);
+  const { students, courses, setCourses } = useAdminData();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
@@ -116,9 +99,9 @@ export default function CourseManagement() {
       cell: ({ row }) => <span className="text-xs font-black text-[#1E293B]">{row.getValue("name")}</span>,
     },
     {
-      accessorKey: "id",
+      accessorKey: "studentId",
       header: "ID",
-      cell: ({ row }) => <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{row.getValue("id")}</span>,
+      cell: ({ row }) => <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{row.getValue("studentId")}</span>,
     },
     {
       accessorKey: "email",
@@ -136,8 +119,16 @@ export default function CourseManagement() {
     },
   ], []);
 
+  const enrolledStudents = useMemo(() => {
+    if (!selectedCourse) return [];
+    return students.filter(s => s.course === selectedCourse.name).map(s => ({
+      ...s,
+      attendance: 75 + Math.floor(Math.random() * 20) // Mock attendance for detail view
+    }));
+  }, [selectedCourse, students]);
+
   const enrolledTable = useReactTable({
-    data: ENROLLED_STUDENTS,
+    data: enrolledStudents,
     columns: enrolledColumns,
     getCoreRowModel: getCoreRowModel(),
   });
@@ -147,12 +138,15 @@ export default function CourseManagement() {
   const tableRows = table.getRowModel().rows;
   const currentCoursesRows = tableRows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const stats = [
-    { label: "Total Courses", val: courses.length, icon: BookOpen, color: "bg-indigo-50 text-indigo-600" },
-    { label: "Active Courses", val: courses.filter(c => c.status === "Active").length, icon: CheckCircle, color: "bg-emerald-50 text-emerald-600" },
-    { label: "Inactive Courses", val: courses.filter(c => c.status === "Inactive").length, icon: AlertCircle, color: "bg-rose-50 text-rose-600" },
-    { label: "Total Enrolled", val: "2.5k+", icon: Users, color: "bg-amber-50 text-amber-600" },
-  ];
+  const stats = useMemo(() => {
+    const totalEnrolled = courses.reduce((acc, curr) => acc + (curr.students || 0), 0);
+    return [
+      { label: "Total Courses", val: courses.length, icon: BookOpen, color: "bg-indigo-50 text-indigo-600" },
+      { label: "Active Courses", val: courses.filter(c => c.status === "Active").length, icon: CheckCircle, color: "bg-emerald-50 text-emerald-600" },
+      { label: "Inactive Courses", val: courses.filter(c => c.status === "Inactive").length, icon: AlertCircle, color: "bg-rose-50 text-rose-600" },
+      { label: "Total Enrolled", val: totalEnrolled.toLocaleString(), icon: Users, color: "bg-amber-50 text-amber-600" },
+    ];
+  }, [courses]);
 
   const facultyOptions = ["All Faculty", ...new Set(courses.map(c => c.faculty))];
 
