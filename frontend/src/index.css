@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #4F46E5;
+  --color-primary-container: #3525cd;
+  --color-on-primary: #ffffff;
+  --color-secondary: #545f73;
+  --color-on-secondary: #ffffff;
+  --color-background: #f8f9ff;
+  --color-on-surface: #0b1c30;
+  --color-surface: #ffffff;
+  --color-surface-container: #e5eeff;
+  --color-surface-container-low: #eff4ff;
+  --color-surface-container-lowest: #ffffff;
+  --color-outline: #777587;
+  --color-outline-variant: #c7c4d8;
+
+  --font-family-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-family-serif: "Playfair Display", serif;
+  
+  --radius-eight: 8px;
+  
+  --shadow-tinted: 0 4px 24px rgba(11, 28, 48, 0.05);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-on-surface font-sans antialiased;
+  }
+}
+
+@layer utilities {
+  .glass-effect {
+    @apply backdrop-blur-xl bg-surface-container-low/80 border-none shadow-tinted;
+  }
+  
+  .editorial-gradient {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-container) 100%);
+  }
+  
+  .premium-card {
+    @apply bg-surface-container-lowest rounded-eight p-6 shadow-tinted transition-all duration-300 hover:scale-[1.01];
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
