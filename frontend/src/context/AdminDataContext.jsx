@@ -16,7 +16,7 @@ export const AdminDataProvider = ({ children }) => {
   });
 
   const [courses, setCourses] = useState(() => {
-    const saved = localStorage.getItem('admin_master_courses_v2');
+    const saved = localStorage.getItem('admin_master_courses_v4');
     return saved ? JSON.parse(saved) : INITIAL_COURSES;
   });
 
@@ -35,7 +35,7 @@ export const AdminDataProvider = ({ children }) => {
   }, [fees]);
 
   useEffect(() => {
-    localStorage.setItem('admin_master_courses_v2', JSON.stringify(courses));
+    localStorage.setItem('admin_master_courses_v4', JSON.stringify(courses));
   }, [courses]);
 
   useEffect(() => {

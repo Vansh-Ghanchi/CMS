@@ -16,7 +16,7 @@ export default function CourseManagement() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
-  const [filters, setFilters] = useState({ search: "", status: "All Status", faculty: "All Faculty" });
+  const [filters, setFilters] = useState({ search: "", status: "All Status", faculty: "All Faculty", feeRange: "All Fees", institute: "All Institute" });
   const itemsPerPage = 6;
 
   // Filter Logic
@@ -26,7 +26,14 @@ export default function CourseManagement() {
                            c.id.toLowerCase().includes(filters.search.toLowerCase());
       const matchesStatus = filters.status === "All Status" || c.status === filters.status;
       const matchesFaculty = filters.faculty === "All Faculty" || c.faculty === filters.faculty;
-      return matchesSearch && matchesStatus && matchesFaculty;
+      const matchesInstitute = filters.institute === "All Institute" || c.institute === filters.institute;
+      
+      let matchesFee = true;
+      if (filters.feeRange === "Under ₹3L") matchesFee = (c.fee || 0) < 3;
+      else if (filters.feeRange === "₹3L - ₹5L") matchesFee = (c.fee || 0) >= 3 && (c.fee || 0) <= 5;
+      else if (filters.feeRange === "Over ₹5L") matchesFee = (c.fee || 0) > 5;
+
+      return matchesSearch && matchesStatus && matchesFaculty && matchesFee && matchesInstitute;
     });
   }, [courses, filters]);
 
@@ -42,9 +49,28 @@ export default function CourseManagement() {
       cell: ({ row }) => <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{row.getValue("id")}</span>,
     },
     {
+      accessorKey: "institute",
+      header: "INSTITUTE",
+      cell: ({ row }) => (
+        <span className={`px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
+          row.getValue("institute") === 'GIT' ? 'bg-indigo-50 text-indigo-600' : 'bg-amber-50 text-amber-600'
+        }`}>
+          {row.getValue("institute")}
+        </span>
+      ),
+    },
+    {
       accessorKey: "name",
       header: "COURSE NAME",
       cell: ({ row }) => <span className="text-sm font-black text-[#1E293B] tracking-tight whitespace-nowrap">{row.getValue("name")}</span>,
+    },
+    {
+      accessorKey: "fee",
+      header: "COURSE FEE",
+      cell: ({ row }) => {
+        const fee = row.getValue("fee") || 0;
+        return <span className="text-xs font-bold text-primary whitespace-nowrap">₹ {fee.toFixed(2)} Lakh</span>;
+      },
     },
     {
       accessorKey: "duration",
@@ -190,7 +216,9 @@ export default function CourseManagement() {
              </div>
           </div>
           
+          <Dropdown label="Institute" value={filters.institute} options={["All Institute", "GIT", "GICSA"]} onChange={(v) => setFilters(prev => ({ ...prev, institute: v }))} />
           <Dropdown label="Status" value={filters.status} options={["All Status", "Active", "Inactive"]} onChange={(v) => setFilters(prev => ({ ...prev, status: v }))} />
+          <Dropdown label="Course Fee" value={filters.feeRange} options={["All Fees", "Under ₹3L", "₹3L - ₹5L", "Over ₹5L"]} onChange={(v) => setFilters(prev => ({ ...prev, feeRange: v }))} />
           <Dropdown label="Assign Faculty" value={filters.faculty} options={facultyOptions} onChange={(v) => setFilters(prev => ({ ...prev, faculty: v }))} />
         </div>
 

@@ -171,12 +171,12 @@ export const getMonthlyFeeTrends = () => {
 };
 
 export const INITIAL_COURSES = [
-  { id: "CRS-1001", name: "B-Tech (CS)", duration: "4 Years", faculty: "Prof. Wilson", students: 450, status: "Active", description: "Comprehensive study of computer systems and software development.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1002", name: "B-Tech (CSE)", duration: "4 Years", faculty: "Dr. Chen", students: 280, status: "Active", description: "Focus on systematic development of large-scale software systems.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1003", name: "B-Tech (AI)", duration: "4 Years", faculty: "Prof. Sarah", students: 180, status: "Active", description: "Study of cognitive models and artificial intelligence architectures.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
-  { id: "CRS-1004", name: "BSC (IT)", duration: "3 Years", faculty: "Dr. Gilbert", students: 150, status: "Active", description: "Foundational information technology and system studies.", startDate: "15 Jan 2024", endDate: "15 Dec 2026" },
-  { id: "CRS-1005", name: "MSC (IT) INT", duration: "5 Years", faculty: "Prof. Harrison", students: 320, status: "Active", description: "Integrated master program for information technology.", startDate: "01 Sep 2022", endDate: "30 Jun 2027" },
-  { id: "CRS-1006", name: "BCA", duration: "3 Years", faculty: "Prof. James", students: 210, status: "Active", description: "Bachelor of Computer Applications - core logic and development.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
+  { id: "CRS-1001", name: "B-Tech (CS)", duration: "4 Years", faculty: "Prof. Wilson", institute: "GIT", students: 450, status: "Active", fee: 6.00, description: "Comprehensive study of computer systems and software development.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
+  { id: "CRS-1002", name: "B-Tech (CSE)", duration: "4 Years", faculty: "Dr. Chen", institute: "GIT", students: 280, status: "Active", fee: 6.20, description: "Focus on systematic development of large-scale software systems.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
+  { id: "CRS-1003", name: "B-Tech (AI)", duration: "4 Years", faculty: "Prof. Sarah", institute: "GIT", students: 180, status: "Active", fee: 6.50, description: "Study of cognitive models and artificial intelligence architectures.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
+  { id: "CRS-1004", name: "BSC (IT)", duration: "3 Years", faculty: "Dr. Gilbert", institute: "GICSA", students: 150, status: "Active", fee: 3.35, description: "Foundational information technology and system studies.", startDate: "15 Jan 2024", endDate: "15 Dec 2026" },
+  { id: "CRS-1005", name: "MSC (IT) INT", duration: "5 Years", faculty: "Prof. Harrison", institute: "GICSA", students: 320, status: "Active", fee: 4.50, description: "Integrated master program for information technology.", startDate: "01 Sep 2022", endDate: "30 Jun 2027" },
+  { id: "CRS-1006", name: "BCA", duration: "3 Years", faculty: "Prof. James", institute: "GICSA", students: 210, status: "Active", fee: 2.80, description: "Bachelor of Computer Applications - core logic and development.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
 ];
 
 export const generateAttendanceLogs = (students) => {
