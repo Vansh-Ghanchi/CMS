@@ -273,6 +273,11 @@ export default function StudentManagement() {
       cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("phone")}</span>,
     },
     {
+      accessorKey: "institute",
+      header: "INSTITUTE",
+      cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("institute")}</span>,
+    },
+    {
       accessorKey: "course",
       header: "COURSE",
       cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("course")}</span>,
@@ -281,11 +286,6 @@ export default function StudentManagement() {
       accessorKey: "admissionDate",
       header: "ADMISSION DATE",
       cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("admissionDate")}</span>,
-    },
-    {
-      accessorKey: "date",
-      header: "DATE",
-      cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("date")}</span>,
     },
     {
       accessorKey: "status",

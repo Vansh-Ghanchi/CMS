@@ -170,7 +170,7 @@ export default function FeesManagement() {
     ];
   }, [students]);
 
-  const courseOptions = [...new Set(INITIAL_FEE_STUDENTS.map(s => s.course))];
+  const courseOptions = [...new Set(students.map(s => s.course))];
 
   return (
     <AdminLayout>

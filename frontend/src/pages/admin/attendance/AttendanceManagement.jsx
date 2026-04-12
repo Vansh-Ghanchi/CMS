@@ -453,6 +453,52 @@ function DropdownFilter({ label, val, setVal, options, className, disabled, plac
 }
 
 function StudentModal({ isOpen, student, onClose }) {
+  const { attendanceLogs: ATTENDANCE_LOGS } = useAdminData();
+  const [viewDate, setViewDate] = useState(new Date(2026, 3)); // Default to April 2026
+
+  const viewMonth = viewDate.getMonth();
+  const viewYear = viewDate.getFullYear();
+
+  const prevMonth = () => {
+    if (viewYear === 2025 && viewMonth === 0) return;
+    setViewDate(new Date(viewYear, viewMonth - 1));
+  };
+
+  const nextMonth = () => {
+    if (viewYear === 2026 && viewMonth === 3) return;
+    setViewDate(new Date(viewYear, viewMonth + 1));
+  };
+
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+  // Generate dynamic calendar
+  const monthDays = useMemo(() => {
+    if (!student) return [];
+    const days = [];
+    const firstDay = new Date(viewYear, viewMonth, 1);
+    const lastDay = new Date(viewYear, viewMonth + 1, 0).getDate();
+    
+    // Adjust startOffset for Monday start: Mon(0), Tue(1)... Sun(6)
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    
+    for (let i = 0; i < startOffset; i++) days.push(null);
+    
+    for (let d = 1; d <= lastDay; d++) {
+        const dateStr = `${viewYear}-${(viewMonth + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+        const log = ATTENDANCE_LOGS.find(l => l.studentId === student.studentId && l.date === dateStr);
+        
+        let status = 'Other';
+        if (log) status = log.status;
+        else {
+            const curDate = new Date(viewYear, viewMonth, d);
+            if (curDate.getDay() === 0) status = 'Other';
+        }
+        
+        days.push({ day: d, status });
+    }
+    return days;
+  }, [student, ATTENDANCE_LOGS, viewMonth, viewYear]);
+
   if (!isOpen || !student) return null;
 
   const modalContent = (
@@ -462,7 +508,7 @@ function StudentModal({ isOpen, student, onClose }) {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-white rounded-[40px] w-full max-w-xs overflow-hidden shadow-2xl relative p-10 flex flex-col items-center text-center"
+          className="bg-white rounded-[40px] w-full max-w-[340px] overflow-hidden shadow-2xl relative p-8 flex flex-col items-center"
         >
           <button 
             onClick={onClose}
@@ -471,12 +517,72 @@ function StudentModal({ isOpen, student, onClose }) {
             <X className="w-5 h-5" />
           </button>
 
-          <div className="w-28 h-28 rounded-[28px] overflow-hidden border-4 border-slate-50 shadow-xl mb-6">
+          <div className="w-20 h-20 rounded-[24px] overflow-hidden border-4 border-slate-50 shadow-lg mb-4">
             <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
           </div>
 
-          <h3 className="text-lg font-black text-[#1E293B] tracking-tight">{student.name}</h3>
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-2">{student.studentId}</p>
+          <h3 className="text-base font-black text-[#1E293B] tracking-tight">{student.name}</h3>
+          <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1 mb-8">{student.studentId}</p>
+
+          {/* Attendance Calendar */}
+          <div className="w-full bg-slate-50 rounded-[32px] p-6 border border-slate-100">
+             <div className="flex justify-between items-center mb-6">
+                <h4 className="text-[10px] font-black text-[#1E293B] uppercase tracking-widest">{monthNames[viewMonth]} {viewYear}</h4>
+                <div className="flex gap-2">
+                   <button 
+                     onClick={prevMonth} 
+                     disabled={viewYear === 2025 && viewMonth === 0}
+                     className="p-1.5 bg-white border border-slate-100 rounded-lg text-slate-400 hover:text-primary transition-colors disabled:opacity-20"
+                   >
+                     <ChevronLeft className="w-3 h-3" />
+                   </button>
+                   <button 
+                     onClick={nextMonth} 
+                     disabled={viewYear === 2026 && viewMonth === 3}
+                     className="p-1.5 bg-white border border-slate-100 rounded-lg text-slate-400 hover:text-primary transition-colors disabled:opacity-20"
+                   >
+                     <ChevronRight className="w-3 h-3" />
+                   </button>
+                </div>
+             </div>
+             
+             <div className="grid grid-cols-7 gap-2 mb-2">
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(d => (
+                    <div key={d} className="text-[8px] font-black text-slate-300 text-center">{d}</div>
+                ))}
+             </div>
+
+             <div className="grid grid-cols-7 gap-2">
+                {monthDays.map((d, index) => (
+                    <div key={index} className="aspect-square flex items-center justify-center">
+                        {!d ? null : (
+                            <div className={`w-full aspect-square rounded-[8px] flex items-center justify-center text-[10px] font-black transition-all shadow-sm ${
+                                d.status === 'Present' ? 'bg-emerald-500 text-white' :
+                                d.status === 'Absent' ? 'bg-rose-500 text-white' :
+                                'bg-amber-400 text-white'
+                            }`}>
+                                {d.day}
+                            </div>
+                        )}
+                    </div>
+                ))}
+             </div>
+
+             <div className="mt-6 flex justify-center gap-4 border-t border-slate-200 pt-5">
+                <div className="flex items-center gap-1.5 ">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Present</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Absent</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Other</span>
+                </div>
+             </div>
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>
