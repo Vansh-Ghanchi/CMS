@@ -188,21 +188,21 @@ export default function CourseManagement() {
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           {stats.map((stat, i) => (
-            <div key={i} className="bg-white p-6 rounded-[28px] border border-slate-200 shadow-sm">
-              <div className={`w-12 h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-5 shrink-0`}>
-                <stat.icon className="w-6 h-6" />
+            <div key={i} className="bg-white p-6 rounded-[24px] md:rounded-[28px] border border-slate-200 shadow-sm transition-all hover:shadow-lg hover:shadow-black/5">
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-4 md:mb-5 shrink-0`}>
+                <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-              <h4 className="text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
+              <h4 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
             </div>
           ))}
         </div>
 
         {/* Filters bar */}
-        <div className="bg-white rounded-[24px] border border-slate-200 p-6 flex flex-wrap lg:flex-nowrap gap-4 items-end shadow-sm">
-          <div className="flex-[2] min-w-[250px]">
+        <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 flex flex-wrap gap-4 items-end shadow-sm">
+          <div className="flex-grow min-w-[200px] sm:min-w-[300px]">
              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Search Courses</label>
              <div className="relative">
                 <input 
@@ -216,24 +216,26 @@ export default function CourseManagement() {
              </div>
           </div>
           
-          <Dropdown label="Institute" value={filters.institute} options={["All Institute", "GIT", "GICSA"]} onChange={(v) => setFilters(prev => ({ ...prev, institute: v }))} />
-          <Dropdown label="Status" value={filters.status} options={["All Status", "Active", "Inactive"]} onChange={(v) => setFilters(prev => ({ ...prev, status: v }))} />
-          <Dropdown label="Course Fee" value={filters.feeRange} options={["All Fees", "Under ₹3L", "₹3L - ₹5L", "Over ₹5L"]} onChange={(v) => setFilters(prev => ({ ...prev, feeRange: v }))} />
-          <Dropdown label="Assign Faculty" value={filters.faculty} options={facultyOptions} onChange={(v) => setFilters(prev => ({ ...prev, faculty: v }))} />
+          <div className="grid grid-cols-2 md:flex md:flex-row gap-4 w-full lg:w-auto">
+             <Dropdown label="Institute" value={filters.institute} options={["All Institute", "GIT", "GICSA"]} onChange={(v) => setFilters(prev => ({ ...prev, institute: v }))} />
+             <Dropdown label="Status" value={filters.status} options={["All Status", "Active", "Inactive"]} onChange={(v) => setFilters(prev => ({ ...prev, status: v }))} />
+             <Dropdown label="Fee Range" value={filters.feeRange} options={["All Fees", "Under ₹3L", "₹3L - ₹5L", "Over ₹5L"]} onChange={(v) => setFilters(prev => ({ ...prev, feeRange: v }))} />
+             <Dropdown label="Faculty" value={filters.faculty} options={facultyOptions} onChange={(v) => setFilters(prev => ({ ...prev, faculty: v }))} />
+          </div>
         </div>
 
         {/* Main Table */}
-        <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-          <div className="p-8 border-b border-slate-50 bg-slate-50/10 flex justify-between items-center">
-             <h3 className="text-xl font-black text-[#1E293B] tracking-tight">System Courses List</h3>
+        <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div className="p-6 md:p-8 border-b border-slate-50 bg-slate-50/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+             <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate uppercase">System Courses List</h3>
           </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
+          <div className="overflow-x-auto md:overflow-visible lg:overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+            <table className="w-full text-left min-w-[900px]">
               <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                   <tr key={headerGroup.id} className="bg-slate-50/50">
                     {headerGroup.headers.map(header => (
-                      <th key={header.id} className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </th>
                     ))}
@@ -248,7 +250,7 @@ export default function CourseManagement() {
                     className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedCourse?.id === row.original.id ? 'bg-primary/5' : ''}`}
                   >
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="py-6 px-8">
+                      <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -259,22 +261,22 @@ export default function CourseManagement() {
           </div>
           
           {/* Pagination */}
-          <div className="p-6 border-t border-slate-50 bg-slate-50/5 flex justify-between items-center">
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+          <div className="p-6 border-t border-slate-50 bg-slate-50/5 flex flex-col sm:flex-row justify-between items-center gap-6">
+             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest order-2 sm:order-1">
                 Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredCourses.length)} of {filteredCourses.length} entries
              </span>
-             <div className="flex items-center gap-2">
-                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} className="w-10 h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronLeft className="w-4 h-4" /></button>
+             <div className="flex items-center gap-2 order-1 sm:order-2">
+                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronLeft className="w-4 h-4" /></button>
                 {[...Array(totalPages)].map((_, i) => (
                   <button 
                     key={i} 
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:text-primary hover:bg-white'}`}
+                    className={`w-9 h-9 md:w-10 md:h-10 rounded-xl text-[10px] md:text-[11px] font-black transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:text-primary hover:bg-white'}`}
                   >
                     {i + 1}
                   </button>
                 ))}
-                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} className="w-10 h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronRight className="w-4 h-4" /></button>
              </div>
           </div>
         </div>
@@ -287,22 +289,22 @@ export default function CourseManagement() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white rounded-[32px] border border-slate-200 shadow-sm p-10 relative overflow-hidden"
+              className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm p-6 md:p-10 relative overflow-hidden"
             >
               <button 
                 onClick={() => setSelectedCourse(null)}
-                className="absolute top-8 right-8 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300"
+                className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300"
               >
                  <X className="w-5 h-5" />
               </button>
 
-              <div className="flex flex-col gap-12">
-                <div className="flex flex-col lg:flex-row gap-16">
+              <div className="flex flex-col gap-10 md:gap-12">
+                <div className="flex flex-col lg:flex-row gap-8 lg:gap-16">
                   <div className="flex-1">
-                    <h3 className="text-3xl font-black text-[#1E293B] tracking-tighter mb-4">{selectedCourse.name}</h3>
-                    <p className="text-sm font-bold text-slate-400 leading-relaxed mb-8 max-w-2xl">{selectedCourse.description}</p>
+                    <h3 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter mb-4 truncate">{selectedCourse.name}</h3>
+                    <p className="text-xs md:text-sm font-bold text-slate-400 leading-relaxed mb-8 max-w-2xl">{selectedCourse.description}</p>
                     
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 md:gap-8">
                        <DetailItem label="Course ID" val={selectedCourse.id} />
                        <DetailItem label="Course Fee" val={`₹ ${(selectedCourse.fee || 0).toFixed(2)} Lakh`} />
                        <DetailItem label="Duration" val={selectedCourse.duration} />
@@ -317,34 +319,36 @@ export default function CourseManagement() {
                 <div className="flex flex-col gap-6">
                    <div className="flex items-center gap-3">
                       <Users className="w-5 h-5 text-indigo-500" />
-                      <h4 className="text-lg font-black text-[#1E293B] tracking-tight">Currently Enrolled Students</h4>
+                      <h4 className="text-base md:text-lg font-black text-[#1E293B] tracking-tight">Currently Enrolled Students</h4>
                    </div>
 
-                   <div className="bg-[#F8FAFC] rounded-[24px] border border-slate-200 overflow-hidden">
-                      <table className="w-full text-left">
-                         <thead>
-                            {enrolledTable.getHeaderGroups().map(headerGroup => (
-                              <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
-                                  <th key={header.id} className="py-4 px-8 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                                  </th>
-                                ))}
-                              </tr>
-                            ))}
-                         </thead>
-                         <tbody className="divide-y divide-slate-100">
-                            {enrolledTable.getRowModel().rows.map((row) => (
-                               <tr key={row.id} className="hover:bg-white transition-all">
-                                  {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className="py-4 px-8">
-                                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </td>
+                   <div className="bg-[#F8FAFC] rounded-[20px] md:rounded-[24px] border border-slate-200 overflow-hidden">
+                      <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+                        <table className="w-full text-left min-w-[600px]">
+                           <thead>
+                              {enrolledTable.getHeaderGroups().map(headerGroup => (
+                                <tr key={headerGroup.id}>
+                                  {headerGroup.headers.map(header => (
+                                    <th key={header.id} className="py-3 px-6 md:px-8 text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                                    </th>
                                   ))}
-                               </tr>
-                            ))}
-                         </tbody>
-                      </table>
+                                </tr>
+                              ))}
+                           </thead>
+                           <tbody className="divide-y divide-slate-100">
+                              {enrolledTable.getRowModel().rows.map((row) => (
+                                 <tr key={row.id} className="hover:bg-white transition-all">
+                                    {row.getVisibleCells().map(cell => (
+                                      <td key={cell.id} className="py-3 md:py-4 px-6 md:px-8">
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                      </td>
+                                    ))}
+                                 </tr>
+                              ))}
+                           </tbody>
+                        </table>
+                      </div>
                    </div>
                 </div>
               </div>

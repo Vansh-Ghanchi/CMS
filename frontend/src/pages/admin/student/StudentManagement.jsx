@@ -343,7 +343,7 @@ export default function StudentManagement() {
   return (
     <AdminLayout>
       {/* 1. Header Stats Row */}
-      <div className="flex flex-col md:flex-row gap-6 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
         <StatCardShort icon={Users} title="Total Students" value={students.filter(s => s.institute === "GIT" || s.institute === "GICSA").length} subtext="All registered students" color="bg-indigo-600" />
         <StatCardShort icon={UserCheck} title="Active Students" value={students.filter(s => s.status === 'Active').length} subtext="Currently active students" color="bg-emerald-600" />
         <StatCardShort icon={Users} title="Inactive Students" value={students.filter(s => s.status === 'Inactive').length} subtext="Currently inactive students" color="bg-rose-600" />
@@ -351,8 +351,8 @@ export default function StudentManagement() {
       </div>
 
       {/* 2. Search & Filter Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 mb-8 flex flex-col md:flex-row items-center gap-4 shadow-sm">
-        <div className="relative flex-grow h-12">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 mb-8 flex flex-col gap-4 shadow-sm">
+        <div className="relative w-full h-12">
            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
            <input 
              type="text" 
@@ -363,8 +363,8 @@ export default function StudentManagement() {
            />
         </div>
         
-         <div className="flex flex-col md:flex-row items-end gap-6 shrink-0 w-full md:w-auto">
-            <div className="flex-1 md:min-w-[150px] w-full">
+         <div className="flex flex-wrap items-end gap-4 md:gap-6">
+            <div className="flex-1 min-w-[140px]">
                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Institute</label>
                <div className="relative group">
                   <select 
@@ -373,7 +373,7 @@ export default function StudentManagement() {
                       setInstituteFilter(e.target.value);
                       setCourseFilter("");
                     }}
-                    className="w-full h-12 bg-[#F8FAFC] border border-slate-100 rounded-xl px-4 text-xs font-black appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10"
+                    className="w-full h-11 bg-[#F8FAFC] border border-slate-100 rounded-xl px-4 text-xs font-black appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10"
                   >
                     <option value="" hidden>Select Institute</option>
                     <option value="GIT">GIT</option>
@@ -383,14 +383,14 @@ export default function StudentManagement() {
                </div>
             </div>
 
-            <div className={`flex-1 md:min-w-[150px] w-full ${!instituteFilter ? 'opacity-50' : ''}`}>
+            <div className={`flex-1 min-w-[140px] ${!instituteFilter ? 'opacity-50' : ''}`}>
                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Course</label>
                <div className="relative group">
                   <select 
                     value={courseFilter}
                     onChange={(e) => setCourseFilter(e.target.value)}
                     disabled={!instituteFilter}
-                    className="w-full h-12 bg-[#F8FAFC] border border-slate-100 rounded-xl px-4 text-xs font-black appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10 disabled:cursor-not-allowed"
+                    className="w-full h-11 bg-[#F8FAFC] border border-slate-100 rounded-xl px-4 text-xs font-black appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10 disabled:cursor-not-allowed"
                   >
                     <option value="" hidden>Select Course</option>
                     {instituteFilter === "GIT" ? (
@@ -411,14 +411,14 @@ export default function StudentManagement() {
                </div>
             </div>
 
-            <div className={`flex-1 md:min-w-[150px] w-full ${!instituteFilter ? 'opacity-50' : ''}`}>
+            <div className={`flex-1 min-w-[140px] ${!instituteFilter ? 'opacity-50' : ''}`}>
                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Status</label>
                <div className="relative group">
                   <select 
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
                     disabled={!instituteFilter}
-                    className="w-full h-12 bg-[#F8FAFC] border border-slate-100 rounded-xl px-4 text-xs font-black appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10 disabled:cursor-not-allowed"
+                    className="w-full h-11 bg-[#F8FAFC] border border-slate-100 rounded-xl px-4 text-xs font-black appearance-none cursor-pointer focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10 disabled:cursor-not-allowed"
                   >
                     <option>All Status</option>
                     <option>Active</option>
@@ -430,7 +430,7 @@ export default function StudentManagement() {
 
             <button 
               onClick={handleReset} 
-              className="h-12 px-6 bg-slate-50 text-[#1E293B] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 shrink-0 border border-slate-100"
+              className="h-11 px-6 bg-slate-50 text-[#1E293B] rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 border border-slate-100 w-full sm:w-auto mt-2 sm:mt-0"
             >
                <RotateCcw className="w-3.5 h-3.5" />
                Reset
@@ -439,20 +439,20 @@ export default function StudentManagement() {
       </div>
 
       {/* 3. Main Table Section */}
-      <div className="bg-white rounded-[32px] border border-slate-200 overflow-hidden mb-12 shadow-sm">
-        <div className="p-8 border-b border-[#F1F5F9] flex justify-between items-center">
-            <h3 className="text-xl font-black text-[#1E293B] tracking-tight uppercase">Students List</h3>
+      <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 overflow-hidden mb-12 shadow-sm">
+        <div className="p-6 md:p-8 border-b border-[#F1F5F9] flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight uppercase">Students List</h3>
             <div className="flex gap-4">
                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Showing {filteredStudents.length} of {students.length} students</span>
             </div>
         </div>
-        <div className="overflow-x-auto">
-            <table className="w-full text-left">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+            <table className="w-full text-left min-w-[1000px]">
               <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                   <tr key={headerGroup.id} className="bg-slate-50/50">
                     {headerGroup.headers.map(header => (
-                      <th key={header.id} className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                       </th>
                     ))}
@@ -467,7 +467,7 @@ export default function StudentManagement() {
                     className={`group transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
                   >
                     {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="py-5 px-8">
+                      <td key={cell.id} className="py-4 md:py-5 px-6 md:px-8">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}

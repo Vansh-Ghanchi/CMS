@@ -179,7 +179,7 @@ export default function AttendanceManagement() {
         </div>
 
         {/* Dynamic Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
           <StatCard 
             i={0} 
             label="Today's Attendance" 
@@ -215,93 +215,97 @@ export default function AttendanceManagement() {
         </div>
 
         {/* Filters Bar */}
-         <div className="bg-white rounded-[24px] border border-slate-200 p-6 flex items-end gap-3 shadow-sm min-w-0">
-           <div className="w-[140px] shrink-0">
-              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Select Date</label>
-              <div className="relative">
-                 <input 
-                   type="date" 
-                   value={filters.date}
-                   onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                   className="w-full h-11 bg-slate-50 border-none rounded-xl px-4 pr-10 text-[11px] font-black text-black focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
-                 />
-                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+         <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 flex flex-col gap-4 shadow-sm min-w-0">
+           <div className="flex flex-wrap items-end gap-3 md:gap-4">
+              <div className="flex-1 min-w-[140px]">
+                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Select Date</label>
+                 <div className="relative">
+                    <input 
+                      type="date" 
+                      value={filters.date}
+                      onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+                      className="w-full h-11 bg-slate-50 border-none rounded-xl px-4 pr-10 text-[11px] font-black text-black focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                    />
+                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                 </div>
               </div>
+
+              <DropdownFilter 
+                label="Institute" 
+                val={filters.institute} 
+                setVal={(v) => {
+                  const newCourses = v === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
+                                     v === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : [];
+                  setFilters({ ...filters, institute: v, course: newCourses[0] || "" });
+                }} 
+                options={["GIT", "GICSA"]} 
+                placeholder="Select Institute"
+                disabled={!filters.date}
+                className="flex-1 min-w-[140px]"
+              />
+
+              <DropdownFilter 
+                label="Course" 
+                val={filters.course} 
+                setVal={(v) => setFilters({ ...filters, course: v })} 
+                options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
+                         filters.institute === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : []} 
+                disabled={!filters.date || !filters.institute}
+                placeholder="Select Course"
+                className="flex-1 min-w-[140px]"
+              />
            </div>
 
-           <DropdownFilter 
-             label="Institute" 
-             val={filters.institute} 
-             setVal={(v) => {
-               const newCourses = v === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
-                                  v === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : [];
-               setFilters({ ...filters, institute: v, course: newCourses[0] || "" });
-             }} 
-             options={["GIT", "GICSA"]} 
-             placeholder="Select Institute"
-             disabled={!filters.date}
-             className="w-[140px] shrink-0"
-           />
+           <div className="flex flex-wrap items-end gap-3 md:gap-4">
+              <DropdownFilter 
+                label="Status" 
+                val={filters.status} 
+                setVal={(v) => setFilters({ ...filters, status: v })} 
+                options={["All Status", "Present", "Absent"]} 
+                disabled={!filters.date || !filters.institute}
+                placeholder="Select Status"
+                className="flex-1 min-w-[120px]"
+              />
 
-           <DropdownFilter 
-             label="Course" 
-             val={filters.course} 
-             setVal={(v) => setFilters({ ...filters, course: v })} 
-             options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
-                      filters.institute === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : []} 
-             disabled={!filters.date || !filters.institute}
-             placeholder="Select Course"
-             className="w-[140px] shrink-0"
-           />
-
-           <DropdownFilter 
-             label="Status" 
-             val={filters.status} 
-             setVal={(v) => setFilters({ ...filters, status: v })} 
-             options={["All Status", "Present", "Absent"]} 
-             disabled={!filters.date || !filters.institute}
-             placeholder="Select Status"
-             className="w-[120px] shrink-0"
-           />
-
-           <div className="flex-1 min-w-[180px]">
-              <div className="relative">
-                 <input 
-                   type="text" 
-                   placeholder="Search student..." 
-                   value={filters.search}
-                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                   className="w-full h-11 bg-[#F8FAFC] border-none rounded-xl pl-10 pr-4 text-[11px] font-black text-black placeholder:text-black placeholder:font-black focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                 />
-                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="flex-[2] min-w-[200px]">
+                 <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="Search student..." 
+                      value={filters.search}
+                      onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                      className="w-full h-11 bg-[#F8FAFC] border-none rounded-xl pl-10 pr-4 text-[11px] font-black text-black placeholder:text-black placeholder:font-black focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                    />
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                 </div>
               </div>
-           </div>
 
-           <button onClick={handleReset} className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 shrink-0">
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
-           </button>
+              <button onClick={handleReset} className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
+                 <RotateCcw className="w-3.5 h-3.5" />
+                 Reset
+              </button>
+           </div>
         </div>
 
         {/* Students Table Section */}
-        <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-           <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/10">
-              <h3 className="text-xl font-black text-[#1E293B] tracking-tight shrink-0">
+        <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+           <div className="p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/10">
+              <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate">
                 Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
               </h3>
-              <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all">
+              <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all w-full sm:w-auto justify-center">
                  <Download className="w-3.5 h-3.5" />
                  Export
               </button>
            </div>
            
-           <div className="overflow-x-auto">
-              <table className="w-full text-left">
+           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+              <table className="w-full text-left min-w-[900px]">
                  <thead>
                     {table.getHeaderGroups().map(headerGroup => (
                       <tr key={headerGroup.id} className="bg-slate-50/50">
                         {headerGroup.headers.map(header => (
-                          <th key={header.id} className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                           </th>
                         ))}
@@ -317,7 +321,7 @@ export default function AttendanceManagement() {
                           className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
                         >
                           {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} className="py-6 px-8">
+                            <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                             </td>
                           ))}
@@ -340,15 +344,15 @@ export default function AttendanceManagement() {
            </div>
 
            {/* Pagination */}
-           <div className="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/5">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+           <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest order-2 sm:order-1 text-center sm:text-left">
                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} students
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 order-1 sm:order-2">
                  <button 
                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                    disabled={currentPage === 1}
-                   className="w-10 h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
                  >
                     <ChevronLeft className="w-4 h-4" />
                  </button>
@@ -357,7 +361,7 @@ export default function AttendanceManagement() {
                    <button 
                      key={i + 1}
                      onClick={() => setCurrentPage(i + 1)}
-                     className={`w-10 h-10 rounded-xl flex items-center justify-center text-[11px] font-black transition-all ${
+                     className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all ${
                        currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:bg-white hover:text-primary'
                      }`}
                    >
@@ -367,12 +371,12 @@ export default function AttendanceManagement() {
                  
                  {totalPages > 5 && (
                    <>
-                     <div className="w-10 h-10 flex items-center justify-center text-slate-300">
+                     <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-slate-300">
                         <MoreHorizontal className="w-4 h-4" />
                      </div>
                      <button 
                        onClick={() => setCurrentPage(totalPages)}
-                       className={`w-10 h-10 rounded-xl flex items-center justify-center text-[11px] font-black transition-all border border-slate-100 text-slate-400 hover:bg-white hover:text-primary ${currentPage === totalPages ? 'bg-primary text-white shadow-lg shadow-primary/20' : ''}`}
+                       className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all border border-slate-100 text-slate-400 hover:bg-white hover:text-primary ${currentPage === totalPages ? 'bg-primary text-white shadow-lg shadow-primary/20' : ''}`}
                      >
                        {totalPages}
                      </button>
@@ -382,7 +386,7 @@ export default function AttendanceManagement() {
                  <button 
                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                    disabled={currentPage === totalPages}
-                   className="w-10 h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
                  >
                     <ChevronRight className="w-4 h-4" />
                  </button>
@@ -547,8 +551,8 @@ function StudentModal({ isOpen, student, onClose }) {
              </div>
              
              <div className="grid grid-cols-7 gap-2 mb-2">
-                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map(d => (
-                    <div key={d} className="text-[8px] font-black text-slate-300 text-center">{d}</div>
+                {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
+                    <div key={i} className="text-[8px] font-black text-slate-300 text-center">{d}</div>
                 ))}
              </div>
 

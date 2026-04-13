@@ -301,7 +301,7 @@ export default function AdminHome() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-14">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-10 md:mb-14">
         <StatCard title="Total Students" value={statsValues.students} badge="+12.5%" icon={Users} color="bg-indigo-600" />
         <StatCard title="Attendance %" value={statsValues.attendance} badge="Optimal" icon={CheckCircle} color="bg-emerald-600" />
         <StatCard title="Total Courses" value={statsValues.courses} badge={statsValues.activeCourses} icon={BookOpen} color="bg-amber-600" />
@@ -309,9 +309,9 @@ export default function AdminHome() {
       </div>
 
       {/* Middle Grid: Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mb-14">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10 mb-10 md:mb-14">
         {/* Fees Collection Trend */}
-        <div className="lg:col-span-2 bg-white rounded-[40px] p-12 border border-slate-200 shadow-sm shadow-black/5 min-h-[500px]">
+        <div className="lg:col-span-2 bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-12 border border-slate-200 shadow-sm shadow-black/5 min-h-[400px] md:min-h-[500px]">
            <div className="flex justify-between items-start mb-14">
               <div>
                  <h3 className="text-2xl font-black text-on-surface tracking-tight mb-2">Fee Collection Trends</h3>
@@ -404,14 +404,14 @@ export default function AdminHome() {
         </div>
 
         {/* Student Enrollment Donut */}
-        <div className="bg-[#EFF4FF] rounded-[40px] p-12 border border-blue-100 shadow-sm shadow-black/5 flex flex-col min-h-[500px]">
-           <div className="flex justify-between items-start mb-10 w-full">
-              <h3 className="text-2xl font-black text-[#0B1C30] tracking-tight">Student Enrollment</h3>
-              <div className="flex gap-2">
+        <div className="bg-[#EFF4FF] rounded-[32px] md:rounded-[40px] p-6 md:p-12 border border-blue-100 shadow-sm shadow-black/5 flex flex-col min-h-[400px] md:min-h-[500px]">
+           <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 w-full">
+              <h3 className="text-xl md:text-2xl font-black text-[#0B1C30] tracking-tight truncate">Student Enrollment</h3>
+              <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
                  <select 
                    value={enrollmentYear} 
                    onChange={(e) => setEnrollmentYear(Number(e.target.value))}
-                   className="bg-white/50 border-none outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none"
+                   className="flex-1 sm:flex-none bg-white/50 border-none outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none min-w-[80px]"
                  >
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
@@ -419,7 +419,7 @@ export default function AdminHome() {
                  <select 
                    value={enrollmentMonth} 
                    onChange={(e) => setEnrollmentMonth(Number(e.target.value))}
-                   className="bg-white/50 border-none outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none"
+                   className="flex-1 sm:flex-none bg-white/50 border-none outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none min-w-[100px]"
                  >
                     {MONTHS.map((m, i) => (
                       <option key={m} value={i}>{m}</option>
@@ -428,7 +428,7 @@ export default function AdminHome() {
               </div>
            </div>
            
-           <div className="relative w-full h-[240px] flex items-center justify-center">
+           <div className="relative w-full h-[200px] md:h-[240px] flex items-center justify-center">
               <ResponsiveContainer width="100%" height="100%">
                  <PieChart>
                     <Tooltip 
@@ -438,8 +438,8 @@ export default function AdminHome() {
                      />
                     <Pie
                       data={currentEnrollmentData}
-                      innerRadius={80}
-                      outerRadius={100}
+                      innerRadius={window.innerWidth < 768 ? 60 : 80}
+                      outerRadius={window.innerWidth < 768 ? 80 : 100}
                       paddingAngle={3}
                       dataKey="value"
                       stroke="none"
@@ -451,27 +451,27 @@ export default function AdminHome() {
                  </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                 <span className="text-4xl font-black text-on-surface tracking-tighter leading-none">
+                 <span className="text-2xl md:text-4xl font-black text-on-surface tracking-tighter leading-none">
                     {currentEnrollmentData.reduce((acc, curr) => acc + curr.value, 0)}
                  </span>
-                 <span className="text-[10px] font-black text-secondary uppercase tracking-widest mt-2">Students</span>
+                 <span className="text-[9px] md:text-[10px] font-black text-secondary uppercase tracking-widest mt-1 md:mt-2">Students</span>
               </div>
            </div>
 
-           <div className="grid grid-cols-2 gap-x-8 gap-y-4 mt-10 w-full">
-              <div className="space-y-4">
+           <div className="grid grid-cols-2 gap-x-4 md:gap-x-8 gap-y-4 mt-8 md:mt-10 w-full">
+              <div className="space-y-3">
                  {currentEnrollmentData.slice(0, 3).map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                       <div className="w-3 h-3 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: item.color }} />
-                       <span className="text-[10px] font-black text-secondary uppercase tracking-tight truncate">{item.name}</span>
+                    <div key={i} className="flex items-center gap-2 md:gap-3">
+                       <div className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: item.color }} />
+                       <span className="text-[9px] md:text-[10px] font-black text-secondary uppercase tracking-tight truncate">{item.name}</span>
                     </div>
                  ))}
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                  {currentEnrollmentData.slice(3, 6).map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                       <div className="w-3 h-3 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: item.color }} />
-                       <span className="text-[10px] font-black text-secondary uppercase tracking-tight truncate">{item.name}</span>
+                    <div key={i} className="flex items-center gap-2 md:gap-3">
+                       <div className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: item.color }} />
+                       <span className="text-[9px] md:text-[10px] font-black text-secondary uppercase tracking-tight truncate">{item.name}</span>
                     </div>
                  ))}
               </div>
@@ -480,18 +480,18 @@ export default function AdminHome() {
       </div>
 
       {/* Attendance Overview (Long Bar Chart) */}
-      <div className="bg-white rounded-[40px] p-12 border border-slate-200 shadow-sm shadow-black/5 mb-14">
-        <div className="flex justify-between items-start mb-14">
-           <h3 className="text-2xl font-black text-on-surface tracking-tight leading-none uppercase">Monthly Attendance Overview</h3>
-           <div className="px-5 py-2 bg-slate-50 flex items-center gap-2 rounded-full">
-              <span className="text-secondary text-[10px] font-black uppercase tracking-widest">Jan 2025 — Apr 2026</span>
+      <div className="bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-12 border border-slate-200 shadow-sm shadow-black/5 mb-10 md:mb-14">
+        <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-10 md:mb-14">
+           <h3 className="text-xl md:text-2xl font-black text-on-surface tracking-tight leading-none uppercase">Monthly Attendance Overview</h3>
+           <div className="px-5 py-2 bg-slate-50 flex items-center gap-2 rounded-full hidden sm:flex">
+              <span className="text-secondary text-[10px] font-black uppercase tracking-widest text-center whitespace-nowrap">Jan 2025 — Apr 2026</span>
            </div>
         </div>
         <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
-           <div className="h-64 min-w-[1500px]">
+           <div className="h-64 min-w-[800px] md:min-w-[1500px]">
               <ResponsiveContainer width="100%" height="100%">
                  <BarChart data={attendanceTrends}>
-                    <XAxis dataKey="name" fontSize={10} fontWeight={900} axisLine={false} tickLine={false} dy={20} />
+                    <XAxis dataKey="name" fontSize={9} fontWeight={900} axisLine={false} tickLine={false} dy={15} />
                     <Tooltip 
                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 40px rgba(0,0,0,0.05)', padding: '12px' }}
                        itemStyle={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}
@@ -502,12 +502,12 @@ export default function AdminHome() {
                         dataKey="value" 
                         fill="#E2E8F0" 
                         radius={[6, 6, 0, 0]} 
-                        barSize={40}
+                        barSize={24}
                         shape={(props) => {
                             const { fill, x, y, width, height } = props;
                             // Dynamic color based on attendance %
                             const color = props.value >= 90 ? '#10B981' : (props.value >= 80 ? '#4F46E5' : '#F59E0B');
-                            return <rect x={x} y={y} width={width} height={height} fill={color} rx={6} ry={6} />;
+                            return <rect x={x} y={y} width={width} height={height} fill={color} rx={4} ry={4} />;
                         }}
                     />
                  </BarChart>
@@ -517,12 +517,12 @@ export default function AdminHome() {
       </div>
 
       {/* Faculty Section */}
-      <div className="space-y-10">
+      <div className="space-y-8 md:space-y-10">
          <div className="flex justify-between items-end">
-            <h3 className="text-3xl font-black text-[#0B1C30] tracking-tighter leading-none">Faculty Overview</h3>
+            <h3 className="text-2xl md:text-3xl font-black text-[#0B1C30] tracking-tighter leading-none">Faculty Overview</h3>
          </div>
          
-         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
             {filteredFaculty.map((faculty) => (
                <FacultyCard 
                  key={faculty.id} 

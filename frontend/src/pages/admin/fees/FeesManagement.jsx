@@ -180,22 +180,22 @@ export default function FeesManagement() {
           <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Track student payments and financial records</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
           {stats.map((stat, i) => (
-            <div key={i} className="bg-white p-6 rounded-[28px] border border-slate-200 shadow-sm flex flex-col justify-between">
-              <div className={`w-12 h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-5 shrink-0`}>
-                <stat.icon className="w-6 h-6" />
+            <div key={i} className="bg-white p-6 rounded-[24px] md:rounded-[28px] border border-slate-200 shadow-sm flex flex-col justify-between transition-all hover:shadow-lg hover:shadow-black/5">
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-4 md:mb-5 shrink-0`}>
+                <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
               <div>
                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-                 <h4 className="text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
+                 <h4 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="bg-white rounded-[24px] border border-slate-200 p-6 shadow-sm flex flex-wrap lg:flex-nowrap gap-4 items-end text-slate-200">
-           <div className="flex-[2] min-w-[250px]">
+        <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 shadow-sm flex flex-wrap gap-4 items-end text-slate-200">
+           <div className="flex-grow min-w-[200px] sm:min-w-[300px]">
               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Search Students</label>
               <div className="relative">
                  <input 
@@ -203,57 +203,60 @@ export default function FeesManagement() {
                    placeholder="Name or Student ID..." 
                    value={filters.search}
                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                   className="w-full h-11 bg-slate-50 border-none rounded-xl pl-10 pr-4 text-xs font-black text-black placeholder:text-black placeholder:font-black outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                   className="w-full h-11 bg-slate-50 border-none rounded-xl pl-10 pr-4 text-xs font-black text-black placeholder:text-black placeholder:font-black outline-none focus:ring-2 focus:ring-primary/20 transition-all font-bold"
                  />
                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               </div>
            </div>
-           <Dropdown 
-             label="Institute" 
-             value={filters.institute} 
-             options={["GIT", "GICSA"]} 
-             placeholder="Select Institute"
-             onChange={(v) => {
-               setFilters(prev => ({ ...prev, institute: v, course: "" }));
-             }} 
-           />
-           <Dropdown 
-             label="Course" 
-             value={filters.course} 
-             options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
-                      filters.institute === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : []} 
-             disabled={!filters.institute}
-             placeholder="Select Course"
-             onChange={(v) => setFilters(prev => ({ ...prev, course: v }))} 
-           />
-           <Dropdown 
-             label="Payment Status" 
-             value={filters.status} 
-             options={["All Status", "Paid", "Pending", "Overdue"]} 
-             disabled={!filters.institute}
-             onChange={(v) => setFilters(prev => ({ ...prev, status: v }))} 
-           />
-           <button 
-             onClick={handleReset} 
-             className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center gap-2 shrink-0 border border-slate-100"
-           >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
-           </button>
+           
+           <div className="grid grid-cols-2 md:grid-cols-3 md:flex md:flex-row gap-4 w-full lg:w-auto items-end">
+              <Dropdown 
+                label="Institute" 
+                value={filters.institute} 
+                options={["GIT", "GICSA"]} 
+                placeholder="Select Institute"
+                onChange={(v) => {
+                  setFilters(prev => ({ ...prev, institute: v, course: "" }));
+                }} 
+              />
+              <Dropdown 
+                label="Course" 
+                value={filters.course} 
+                options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
+                         filters.institute === "GICSA" ? ["BSC (IT) ", "MSC (IT) INT", "BCA"] : []} 
+                disabled={!filters.institute}
+                placeholder="Select Course"
+                onChange={(v) => setFilters(prev => ({ ...prev, course: v }))} 
+              />
+              <Dropdown 
+                label="Status" 
+                value={filters.status} 
+                options={["All Status", "Paid", "Pending", "Overdue"]} 
+                disabled={!filters.institute}
+                onChange={(v) => setFilters(prev => ({ ...prev, status: v }))} 
+              />
+              <button 
+                onClick={handleReset} 
+                className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 border border-slate-100 w-full sm:w-auto"
+              >
+                 <RotateCcw className="w-3.5 h-3.5" />
+                 Reset
+              </button>
+           </div>
         </div>
 
-        <div className="bg-white rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-           <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/10">
-              <h3 className="text-xl font-black text-[#1E293B] tracking-tight shrink-0">Student Fees Records</h3>
+        <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+           <div className="p-6 md:p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/10">
+              <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate">Student Fees Records</h3>
            </div>
            
-           <div className="overflow-x-auto">
-              <table className="w-full text-left">
+           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+              <table className="w-full text-left min-w-[1000px]">
                  <thead>
                     {table.getHeaderGroups().map(headerGroup => (
                       <tr key={headerGroup.id} className="bg-slate-50/50">
                          {headerGroup.headers.map(header => (
-                           <th key={header.id} className="py-5 px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                           <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
                               {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                            </th>
                          ))}
@@ -264,7 +267,7 @@ export default function FeesManagement() {
                     {currentRows.map((row) => (
                       <tr key={row.id} onClick={() => setSelectedStudent(row.original)} className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}>
                          {row.getVisibleCells().map(cell => (
-                           <td key={cell.id} className="py-6 px-8">
+                           <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
                               {flexRender(cell.column.columnDef.cell, cell.getContext())}
                            </td>
                          ))}
@@ -274,32 +277,32 @@ export default function FeesManagement() {
               </table>
            </div>
 
-           <div className="p-6 border-t border-slate-50 flex items-center justify-between bg-slate-50/5">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+           <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest order-2 sm:order-1 text-center sm:text-left">
                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} entries
               </span>
-              <div className="flex items-center gap-2">
-                 <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="w-10 h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronLeft className="w-4 h-4" /></button>
+              <div className="flex items-center gap-2 order-1 sm:order-2">
+                 <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronLeft className="w-4 h-4" /></button>
                  {[...Array(totalPages)].map((_, i) => (
-                   <button key={i} onClick={() => setCurrentPage(i + 1)} className={`w-10 h-10 rounded-xl text-[11px] font-black transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:text-primary hover:bg-white'}`}>
+                   <button key={i} onClick={() => setCurrentPage(i + 1)} className={`w-9 h-9 md:w-10 md:h-10 rounded-xl text-[10px] md:text-[11px] font-black transition-all ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:text-primary hover:bg-white'}`}>
                      {i + 1}
                    </button>
                  ))}
-                 <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="w-10 h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronRight className="w-4 h-4" /></button>
+                 <button onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all"><ChevronRight className="w-4 h-4" /></button>
               </div>
            </div>
         </div>
 
         <AnimatePresence mode="wait">
           {selectedStudent && (
-             <motion.div key={selectedStudent.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-[32px] border border-slate-200 shadow-sm p-10 flex flex-col gap-12 relative">
-                <button onClick={() => setSelectedStudent(null)} className="absolute top-8 right-8 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300">
+             <motion.div key={selectedStudent.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm p-6 md:p-10 flex flex-col gap-10 md:gap-12 relative overflow-hidden">
+                <button onClick={() => setSelectedStudent(null)} className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300">
                    <X className="w-5 h-5" />
                 </button>
 
                 <div className="w-full">
-                   <h3 className="text-xl font-black text-[#1E293B] tracking-tight mb-8">Detailed Fees Breakdown</h3>
-                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                   <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight mb-6 md:mb-8">Detailed Fees Breakdown</h3>
+                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-12">
                       <DetailItem label="Full Name" val={selectedStudent.name} />
                       <DetailItem label="Student ID" val={selectedStudent.id} />
                       <DetailItem label="Course" val={selectedStudent.course} />
@@ -308,20 +311,24 @@ export default function FeesManagement() {
 
                    <div className="flex items-center gap-3 mb-6">
                       <PieChart className="w-5 h-5 text-primary" />
-                      <h4 className="text-lg font-black text-[#1E293B] tracking-tight">Semester-wise Breakdown</h4>
+                      <h4 className="text-base md:text-lg font-black text-[#1E293B] tracking-tight">Semester-wise Breakdown</h4>
                    </div>
-                   <div className="overflow-x-auto bg-slate-50/50 rounded-[28px] border border-slate-100 p-2">
-                       <SubTable data={selectedStudent.semesters} columns={semesterColumns} />
+                   <div className="bg-slate-50/50 rounded-[20px] md:rounded-[28px] border border-slate-100 p-2 overflow-hidden">
+                       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+                          <SubTable data={selectedStudent.semesters} columns={semesterColumns} />
+                       </div>
                    </div>
                 </div>
 
                 <div className="flex flex-col gap-6">
                    <div className="flex items-center gap-3">
                       <History className="w-5 h-5 text-indigo-500" />
-                      <h4 className="text-xl font-black text-[#1E293B] tracking-tight">Recent Payment History</h4>
+                      <h4 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight">Recent Payment History</h4>
                    </div>
-                   <div className="bg-[#F8FAFC] rounded-[24px] border border-slate-50 overflow-hidden">
-                       <SubTable data={selectedStudent.history} columns={historyColumns} />
+                   <div className="bg-[#F8FAFC] rounded-[20px] md:rounded-[24px] border border-slate-50 overflow-hidden">
+                       <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+                          <SubTable data={selectedStudent.history} columns={historyColumns} />
+                       </div>
                    </div>
                 </div>
              </motion.div>

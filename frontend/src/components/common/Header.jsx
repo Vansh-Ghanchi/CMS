@@ -1,24 +1,32 @@
 import { useState } from "react";
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Menu } from "lucide-react";
 import { useSearch } from "../../context/SearchContext";
 import { useAuth } from "../../context/AuthContext";
 import ProfileModal from "./ProfileModal";
 
-export default function Header({ title, sub, showSearch = true }) {
+export default function Header({ title, sub, showSearch = true, onMenuClick }) {
   const { searchQuery, setSearchQuery } = useSearch();
   const { user } = useAuth();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
     <>
-      <header className="h-[90px] bg-white border-b border-[#E2E8F0] flex items-center justify-between px-10 sticky top-0 z-40 shrink-0">
-         <div className="flex flex-col">
-            <h2 className="text-[24px] font-black text-[#1E293B] tracking-tighter leading-none mb-1">
-               {title}
-            </h2>
-            <p className="text-[12px] font-bold text-[#64748B] opacity-60">
-               {sub}
-            </p>
+      <header className="h-[70px] md:h-[90px] bg-white border-b border-[#E2E8F0] flex items-center justify-between px-4 md:px-10 sticky top-0 z-40 shrink-0">
+         <div className="flex items-center gap-4">
+            <button 
+              onClick={onMenuClick}
+              className="lg:hidden p-2 -ml-2 hover:bg-slate-50 rounded-xl transition-all text-slate-500"
+            >
+               <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex flex-col">
+               <h2 className="text-[18px] md:text-[24px] font-black text-[#1E293B] tracking-tighter leading-none mb-0.5 md:mb-1 truncate max-w-[150px] md:max-w-none">
+                  {title}
+               </h2>
+               <p className="text-[10px] md:text-[12px] font-bold text-[#64748B] opacity-60 truncate max-w-[120px] md:max-w-none">
+                  {sub}
+               </p>
+            </div>
          </div>
          
          <div className="flex items-center gap-8">
