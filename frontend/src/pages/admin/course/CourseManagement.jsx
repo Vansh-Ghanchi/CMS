@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import AdminLayout from "../../../layouts/AdminLayout";
 import { BookOpen, CheckCircle, GraduationCap, Archive, Mail, User, ShieldCheck, ChevronLeft, ChevronRight, Search, Filter, Edit, Users, Calendar, AlertCircle, Trash2, X, MoreVertical, ArrowUpDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 
 import { useAdminData } from "../../../context/AdminDataContext";
+import { InfinityLoader } from "../../../components/ui/loader-13";
 
 export default function CourseManagement() {
   const { students, courses, setCourses } = useAdminData();
@@ -18,6 +19,8 @@ export default function CourseManagement() {
   const [sorting, setSorting] = useState([]);
   const [filters, setFilters] = useState({ search: "", status: "All Status", faculty: "All Faculty", feeRange: "All Fees", institute: "All Institute" });
   const itemsPerPage = 6;
+  const [isLoading, setIsLoading] = useState(false);
+  const isInitialMount = useRef(true);
 
   // Filter Logic
   const filteredCourses = useMemo(() => {
@@ -36,6 +39,21 @@ export default function CourseManagement() {
       return matchesSearch && matchesStatus && matchesFaculty && matchesFee && matchesInstitute;
     });
   }, [courses, filters]);
+
+  // Trigger loading on any relevant filter change
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1700);
+
+    return () => clearTimeout(timer);
+  }, [filters.search, filters.status, filters.faculty, filters.feeRange, filters.institute]);
 
   const courseColumns = useMemo(() => [
     {
@@ -230,34 +248,45 @@ export default function CourseManagement() {
              <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate uppercase">System Courses List</h3>
           </div>
           <div className="overflow-x-auto md:overflow-visible lg:overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-            <table className="w-full text-left min-w-[900px]">
-              <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id} className="bg-slate-50/50">
-                    {headerGroup.headers.map(header => (
-                      <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </th>
+             {isLoading ? (
+                <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                   <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
+                      <span className="w-8 h-[1px] bg-slate-200"></span>
+                      Processing Records
+                      <span className="w-8 h-[1px] bg-slate-200"></span>
+                   </p>
+                </div>
+             ) : (
+                <table className="w-full text-left min-w-[900px]">
+                  <thead>
+                    {table.getHeaderGroups().map(headerGroup => (
+                      <tr key={headerGroup.id} className="bg-slate-50/50">
+                        {headerGroup.headers.map(header => (
+                          <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                          </th>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {currentCoursesRows.map((row) => (
-                  <tr 
-                    key={row.id} 
-                    onClick={() => setSelectedCourse(row.original)}
-                    className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedCourse?.id === row.original.id ? 'bg-primary/5' : ''}`}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {currentCoursesRows.map((row) => (
+                      <tr 
+                        key={row.id} 
+                        onClick={() => setSelectedCourse(row.original)}
+                        className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedCourse?.id === row.original.id ? 'bg-primary/5' : ''}`}
+                      >
+                        {row.getVisibleCells().map(cell => (
+                          <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  </tbody>
+                </table>
+             )}
           </div>
           
           {/* Pagination */}

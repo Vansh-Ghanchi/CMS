@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 
 import { useAdminData } from "../../../context/AdminDataContext";
+import { InfinityLoader } from "../../../components/ui/loader-13";
 
 const StatCardShort = ({ icon: Icon, title, value, subtext, color }) => (
   <div className="bg-white rounded-[20px] p-6 flex items-center gap-6 border border-slate-200 shadow-sm flex-1">
@@ -185,6 +186,23 @@ export default function StudentManagement() {
   const [courseFilter, setCourseFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("All Status");
   const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    
+    // Trigger loading on any relevant filter change
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1700);
+
+    return () => clearTimeout(timer);
+  }, [instituteFilter, courseFilter, statusFilter]);
 
   const handleReset = () => {
     setInstituteFilter("");
@@ -447,34 +465,45 @@ export default function StudentManagement() {
             </div>
         </div>
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-            <table className="w-full text-left min-w-[1000px]">
-              <thead>
-                {table.getHeaderGroups().map(headerGroup => (
-                  <tr key={headerGroup.id} className="bg-slate-50/50">
-                    {headerGroup.headers.map(header => (
-                      <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                        {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody className="divide-y divide-slate-50">
-                {table.getRowModel().rows.map(row => (
-                  <tr 
-                    key={row.id} 
-                    onClick={() => setSelectedStudent(row.original)}
-                    className={`group transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
-                  >
-                    {row.getVisibleCells().map(cell => (
-                      <td key={cell.id} className="py-4 md:py-5 px-6 md:px-8">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {isLoading ? (
+               <div className="py-32 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                  <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
+                     <span className="w-8 h-[1px] bg-slate-200"></span>
+                     Processing Records
+                     <span className="w-8 h-[1px] bg-slate-200"></span>
+                  </p>
+               </div>
+            ) : (
+               <table className="w-full text-left min-w-[1000px]">
+                 <thead>
+                   {table.getHeaderGroups().map(headerGroup => (
+                     <tr key={headerGroup.id} className="bg-slate-50/50">
+                       {headerGroup.headers.map(header => (
+                         <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                           {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                         </th>
+                       ))}
+                     </tr>
+                   ))}
+                 </thead>
+                 <tbody className="divide-y divide-slate-50">
+                   {table.getRowModel().rows.map(row => (
+                     <tr 
+                       key={row.id} 
+                       onClick={() => setSelectedStudent(row.original)}
+                       className={`group transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
+                     >
+                       {row.getVisibleCells().map(cell => (
+                         <td key={cell.id} className="py-4 md:py-5 px-6 md:px-8">
+                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                         </td>
+                       ))}
+                     </tr>
+                   ))}
+                 </tbody>
+               </table>
+            )}
         </div>
       </div>
 

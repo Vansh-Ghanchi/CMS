@@ -1,4 +1,4 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import AdminLayout from "../../../layouts/AdminLayout";
 import { CheckCircle, Clock, Calendar, AlertCircle, Mail, User, ShieldCheck, Download, Filter as FilterIcon, Search, RotateCcw, ChevronLeft, ChevronRight, MoreHorizontal, X, ArrowUpDown } from "lucide-react";
@@ -11,6 +11,7 @@ import {
 } from "@tanstack/react-table";
 
 import { useAdminData } from "../../../context/AdminDataContext";
+import { InfinityLoader } from "../../../components/ui/loader-13";
 
 export default function AttendanceManagement() {
   const { students: ALL_STUDENTS, attendanceLogs: ATTENDANCE_LOGS, setAttendanceLogs } = useAdminData();
@@ -18,6 +19,8 @@ export default function AttendanceManagement() {
   const [sorting, setSorting] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const itemsPerPage = 7;
+  const [isLoading, setIsLoading] = useState(false);
+  const isInitialMount = useRef(true);
 
   // Filter States
   const [filters, setFilters] = useState({
@@ -29,6 +32,7 @@ export default function AttendanceManagement() {
   });
 
   const handleReset = () => {
+    setIsLoading(true);
     setFilters({
       date: "2026-04-12",
       institute: "",
@@ -38,7 +42,27 @@ export default function AttendanceManagement() {
     });
     setSelectedStudent(null);
     setCurrentPage(1);
+    
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1700);
   };
+
+  // Trigger loading on any relevant filter change
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    // Capture current values to check if everything is empty/default (handled by reset separately)
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1700);
+
+    return () => clearTimeout(timer);
+  }, [filters.date, filters.institute, filters.course, filters.status, filters.search]);
 
   // 3. Dynamic Calculation Logic
   const stats = useMemo(() => {
@@ -299,49 +323,60 @@ export default function AttendanceManagement() {
               </button>
            </div>
            
-           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-              <table className="w-full text-left min-w-[900px]">
-                 <thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                      <tr key={headerGroup.id} className="bg-slate-50/50">
-                        {headerGroup.headers.map(header => (
-                          <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                          </th>
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+               {isLoading ? (
+                  <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                     <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
+                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
+                        <span className="w-8 h-[1px] bg-slate-200"></span>
+                        Processing Records
+                        <span className="w-8 h-[1px] bg-slate-200"></span>
+                     </p>
+                  </div>
+               ) : (
+                  <table className="w-full text-left min-w-[900px]">
+                     <thead>
+                        {table.getHeaderGroups().map(headerGroup => (
+                          <tr key={headerGroup.id} className="bg-slate-50/50">
+                            {headerGroup.headers.map(header => (
+                              <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                              </th>
+                            ))}
+                          </tr>
                         ))}
-                      </tr>
-                    ))}
-                 </thead>
-                 <tbody className="divide-y divide-slate-50">
-                    {currentStudentsRows.length > 0 ? (
-                      currentStudentsRows.map((row) => (
-                        <tr 
-                          key={row.id} 
-                          onClick={() => setSelectedStudent(row.original)}
-                          className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
-                        >
-                          {row.getVisibleCells().map(cell => (
-                            <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                     </thead>
+                     <tbody className="divide-y divide-slate-50">
+                        {currentStudentsRows.length > 0 ? (
+                          currentStudentsRows.map((row) => (
+                            <tr 
+                              key={row.id} 
+                              onClick={() => setSelectedStudent(row.original)}
+                              className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
+                            >
+                              {row.getVisibleCells().map(cell => (
+                                <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </td>
+                              ))}
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={columns.length} className="py-20 text-center">
+                               <div className="flex flex-col items-center gap-4 text-slate-300">
+                                  <Search className="w-12 h-12 opacity-20" />
+                                  <p className="font-bold text-sm tracking-tight capitalize">
+                                    No students found for this selection
+                                  </p>
+                               </div>
                             </td>
-                          ))}
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan={columns.length} className="py-20 text-center">
-                           <div className="flex flex-col items-center gap-4 text-slate-300">
-                              <Search className="w-12 h-12 opacity-20" />
-                              <p className="font-bold text-sm tracking-tight capitalize">
-                                No students found for this selection
-                              </p>
-                           </div>
-                        </td>
-                      </tr>
-                    )}
-                 </tbody>
-              </table>
-           </div>
+                          </tr>
+                        )}
+                     </tbody>
+                  </table>
+               )}
+            </div>
 
            {/* Pagination */}
            <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">

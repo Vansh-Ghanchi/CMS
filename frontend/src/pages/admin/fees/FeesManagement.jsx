@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import AdminLayout from "../../../layouts/AdminLayout";
 import { CreditCard, TrendingUp, AlertTriangle, FileText, Mail, User, ShieldCheck, PieChart, Plus, Search, Filter, ChevronLeft, ChevronRight, X, Calendar, DollarSign, ArrowUpRight, History, ArrowUpDown, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 
 import { useAdminData } from "../../../context/AdminDataContext";
+import { InfinityLoader } from "../../../components/ui/loader-13";
 
 export default function FeesManagement() {
   const { fees: students, setFees: setStudents } = useAdminData();
@@ -23,8 +24,11 @@ export default function FeesManagement() {
     course: "" 
   });
   const itemsPerPage = 8;
+  const [isLoading, setIsLoading] = useState(false);
+  const isInitialMount = useRef(true);
 
   const handleReset = () => {
+    setIsLoading(true);
     setFilters({
       search: "",
       institute: "",
@@ -33,7 +37,25 @@ export default function FeesManagement() {
     });
     setCurrentPage(1);
     setSorting([]);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 1700);
   };
+
+  // Trigger loading on any relevant filter change
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1700);
+
+    return () => clearTimeout(timer);
+  }, [filters.search, filters.institute, filters.course, filters.status]);
 
   const filteredStudents = useMemo(() => {
     if (!filters.institute || !filters.course) return [];
@@ -251,30 +273,41 @@ export default function FeesManagement() {
            </div>
            
            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-              <table className="w-full text-left min-w-[1000px]">
-                 <thead>
-                    {table.getHeaderGroups().map(headerGroup => (
-                      <tr key={headerGroup.id} className="bg-slate-50/50">
-                         {headerGroup.headers.map(header => (
-                           <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                              {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                           </th>
-                         ))}
-                      </tr>
-                    ))}
-                 </thead>
-                 <tbody className="divide-y divide-slate-50">
-                    {currentRows.map((row) => (
-                      <tr key={row.id} onClick={() => setSelectedStudent(row.original)} className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}>
-                         {row.getVisibleCells().map(cell => (
-                           <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                           </td>
-                         ))}
-                      </tr>
-                    ))}
-                 </tbody>
-              </table>
+              {isLoading ? (
+                 <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                    <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
+                       <span className="w-8 h-[1px] bg-slate-200"></span>
+                       Processing Records
+                       <span className="w-8 h-[1px] bg-slate-200"></span>
+                    </p>
+                 </div>
+              ) : (
+                 <table className="w-full text-left min-w-[1000px]">
+                    <thead>
+                       {table.getHeaderGroups().map(headerGroup => (
+                         <tr key={headerGroup.id} className="bg-slate-50/50">
+                            {headerGroup.headers.map(header => (
+                              <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                              </th>
+                            ))}
+                         </tr>
+                       ))}
+                    </thead>
+                    <tbody className="divide-y divide-slate-50">
+                       {currentRows.map((row) => (
+                         <tr key={row.id} onClick={() => setSelectedStudent(row.original)} className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}>
+                            {row.getVisibleCells().map(cell => (
+                              <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
+                                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </td>
+                            ))}
+                         </tr>
+                       ))}
+                    </tbody>
+                 </table>
+              )}
            </div>
 
            <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">
