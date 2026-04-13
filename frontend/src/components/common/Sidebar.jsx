@@ -33,26 +33,34 @@ export default function Sidebar({ onClose }) {
   const getNavItems = () => {
     if (isFacultyStudent) {
       return [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/dashboard' },
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/student-dashboard' },
         { label: 'Student Module', icon: GraduationCap, path: '/faculty/student-module' },
+        { label: 'Reports', icon: BookOpen, path: '/faculty/student-reports' },
+        { label: 'Actions', icon: Settings, path: '/faculty/student-actions' },
       ];
     }
     if (isFacultyAttendance) {
       return [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/dashboard' },
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/attendance-dashboard' },
         { label: 'Attendance Module', icon: CheckCircle, path: '/faculty/attendance-module' },
+        { label: 'Reports', icon: BookOpen, path: '/faculty/attendance-reports' },
+        { label: 'Actions', icon: Settings, path: '/faculty/attendance-actions' },
       ];
     }
     if (isFacultyCourse) {
       return [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/dashboard' },
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/course-dashboard' },
         { label: 'Course Module', icon: BookOpen, path: '/faculty/course-module' },
+        { label: 'Reports', icon: BookOpen, path: '/faculty/course-reports' },
+        { label: 'Actions', icon: Settings, path: '/faculty/course-actions' },
       ];
     }
     if (isFacultyFees) {
       return [
-        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/dashboard' },
+        { label: 'Dashboard', icon: LayoutDashboard, path: '/faculty/fees-dashboard' },
         { label: 'Fees Module', icon: CreditCard, path: '/faculty/fees-module' },
+        { label: 'Reports', icon: BookOpen, path: '/faculty/fees-reports' },
+        { label: 'Actions', icon: Settings, path: '/faculty/fees-actions' },
       ];
     }
     // Admin

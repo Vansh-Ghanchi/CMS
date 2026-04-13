@@ -13,7 +13,7 @@ import {
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
-export default function AttendanceManagement() {
+export default function AttendanceManagement({ noLayout = false }) {
   const { students: ALL_STUDENTS, attendanceLogs: ATTENDANCE_LOGS, setAttendanceLogs } = useAdminData();
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
@@ -193,252 +193,252 @@ export default function AttendanceManagement() {
   const rows = table.getRowModel().rows;
   const currentStudentsRows = rows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  return (
-    <AdminLayout>
-      <div className="flex flex-col gap-8">
-        {/* Header */}
-        <div>
-          <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Attendance Management</h2>
-          <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor and manage student attendance</p>
-        </div>
+  const content = (
+    <div className="flex flex-col gap-8">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Attendance Management</h2>
+        <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor and manage student attendance</p>
+      </div>
 
-        {/* Dynamic Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <StatCard 
-            i={0} 
-            label="Today's Attendance" 
-            val={`${stats.todayPercentage}%`} 
-            sub={`${stats.presentToday} / ${stats.totalStudentsCount} present`} 
-            color="blue" 
-            icon={CheckCircle} 
-          />
-          <StatCard 
-            i={1} 
-            label="This Month's Average" 
-            val={`${stats.monthlyAverage}%`} 
-            sub="Average attendance" 
-            color="emerald" 
-            icon={Calendar} 
-          />
-          <StatCard 
-            i={2} 
-            label="Total Students" 
-            val={stats.totalStudentsCount.toString()} 
-            sub="Across all courses" 
-            color="indigo" 
-            icon={User} 
-          />
-          <StatCard 
-            i={3} 
-            label="Absent Today" 
-            val={stats.absentToday.toString()} 
-            sub={`${stats.absentPercentage}% of total`} 
-            color="rose" 
-            icon={AlertCircle} 
-          />
-        </div>
+      {/* Dynamic Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <StatCard 
+          i={0} 
+          label="Today's Attendance" 
+          val={`${stats.todayPercentage}%`} 
+          sub={`${stats.presentToday} / ${stats.totalStudentsCount} present`} 
+          color="blue" 
+          icon={CheckCircle} 
+        />
+        <StatCard 
+          i={1} 
+          label="This Month's Average" 
+          val={`${stats.monthlyAverage}%`} 
+          sub="Average attendance" 
+          color="emerald" 
+          icon={Calendar} 
+        />
+        <StatCard 
+          i={2} 
+          label="Total Students" 
+          val={stats.totalStudentsCount.toString()} 
+          sub="Across all courses" 
+          color="indigo" 
+          icon={User} 
+        />
+        <StatCard 
+          i={3} 
+          label="Absent Today" 
+          val={stats.absentToday.toString()} 
+          sub={`${stats.absentPercentage}% of total`} 
+          color="rose" 
+          icon={AlertCircle} 
+        />
+      </div>
 
-        {/* Filters Bar */}
-         <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 flex flex-col gap-4 shadow-sm min-w-0">
-           <div className="flex flex-wrap items-end gap-3 md:gap-4">
-              <div className="flex-1 min-w-[140px]">
-                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Select Date</label>
-                 <div className="relative">
-                    <input 
-                      type="date" 
-                      value={filters.date}
-                      onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                      className="w-full h-11 bg-slate-50 border-none rounded-xl px-4 pr-10 text-[11px] font-black text-black focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
-                    />
-                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-                 </div>
-              </div>
-
-              <DropdownFilter 
-                label="Institute" 
-                val={filters.institute} 
-                setVal={(v) => {
-                  const newCourses = v === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
-                                     v === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : [];
-                  setFilters({ ...filters, institute: v, course: newCourses[0] || "" });
-                }} 
-                options={["GIT", "GICSA"]} 
-                placeholder="Select Institute"
-                disabled={!filters.date}
-                className="flex-1 min-w-[140px]"
-              />
-
-              <DropdownFilter 
-                label="Course" 
-                val={filters.course} 
-                setVal={(v) => setFilters({ ...filters, course: v })} 
-                options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
-                         filters.institute === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : []} 
-                disabled={!filters.date || !filters.institute}
-                placeholder="Select Course"
-                className="flex-1 min-w-[140px]"
-              />
-           </div>
-
-           <div className="flex flex-wrap items-end gap-3 md:gap-4">
-              <DropdownFilter 
-                label="Status" 
-                val={filters.status} 
-                setVal={(v) => setFilters({ ...filters, status: v })} 
-                options={["All Status", "Present", "Absent"]} 
-                disabled={!filters.date || !filters.institute}
-                placeholder="Select Status"
-                className="flex-1 min-w-[120px]"
-              />
-
-              <div className="flex-[2] min-w-[200px]">
-                 <div className="relative">
-                    <input 
-                      type="text" 
-                      placeholder="Search student..." 
-                      value={filters.search}
-                      onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                      className="w-full h-11 bg-[#F8FAFC] border-none rounded-xl pl-10 pr-4 text-[11px] font-black text-black placeholder:text-black placeholder:font-black focus:ring-2 focus:ring-primary/20 transition-all outline-none"
-                    />
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                 </div>
-              </div>
-
-              <button onClick={handleReset} className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
-                 <RotateCcw className="w-3.5 h-3.5" />
-                 Reset
-              </button>
-           </div>
-        </div>
-
-        {/* Students Table Section */}
-        <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-           <div className="p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/10">
-              <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate">
-                Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
-              </h3>
-              <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all w-full sm:w-auto justify-center">
-                 <Download className="w-3.5 h-3.5" />
-                 Export
-              </button>
-           </div>
-           
-            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
-               {isLoading ? (
-                  <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
-                     <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
-                        <span className="w-8 h-[1px] bg-slate-200"></span>
-                        Processing Records
-                        <span className="w-8 h-[1px] bg-slate-200"></span>
-                     </p>
-                  </div>
-               ) : (
-                  <table className="w-full text-left min-w-[900px]">
-                     <thead>
-                        {table.getHeaderGroups().map(headerGroup => (
-                          <tr key={headerGroup.id} className="bg-slate-50/50">
-                            {headerGroup.headers.map(header => (
-                              <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                              </th>
-                            ))}
-                          </tr>
-                        ))}
-                     </thead>
-                     <tbody className="divide-y divide-slate-50">
-                        {currentStudentsRows.length > 0 ? (
-                          currentStudentsRows.map((row) => (
-                            <tr 
-                              key={row.id} 
-                              onClick={() => setSelectedStudent(row.original)}
-                              className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
-                            >
-                              {row.getVisibleCells().map(cell => (
-                                <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
-                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </td>
-                              ))}
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={columns.length} className="py-20 text-center">
-                               <div className="flex flex-col items-center gap-4 text-slate-300">
-                                  <Search className="w-12 h-12 opacity-20" />
-                                  <p className="font-bold text-sm tracking-tight capitalize">
-                                    No students found for this selection
-                                  </p>
-                               </div>
-                            </td>
-                          </tr>
-                        )}
-                     </tbody>
-                  </table>
-               )}
+      {/* Filters Bar */}
+       <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 flex flex-col gap-4 shadow-sm min-w-0">
+         <div className="flex flex-wrap items-end gap-3 md:gap-4">
+            <div className="flex-1 min-w-[140px]">
+               <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Select Date</label>
+               <div className="relative">
+                  <input 
+                    type="date" 
+                    value={filters.date}
+                    onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+                    className="w-full h-11 bg-slate-50 border-none rounded-xl px-4 pr-10 text-[11px] font-black text-black focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                  />
+                  <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+               </div>
             </div>
 
-           {/* Pagination */}
-           <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest order-2 sm:order-1 text-center sm:text-left">
-                 Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} students
-              </span>
-              <div className="flex items-center gap-2 order-1 sm:order-2">
-                 <button 
-                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                   disabled={currentPage === 1}
-                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                 >
-                    <ChevronLeft className="w-4 h-4" />
-                 </button>
-                 
-                 {[...Array(Math.min(5, totalPages))].map((_, i) => (
-                   <button 
-                     key={i + 1}
-                     onClick={() => setCurrentPage(i + 1)}
-                     className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all ${
-                       currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:bg-white hover:text-primary'
-                     }`}
-                   >
-                     {i + 1}
-                   </button>
-                 ))}
-                 
-                 {totalPages > 5 && (
-                   <>
-                     <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-slate-300">
-                        <MoreHorizontal className="w-4 h-4" />
-                     </div>
-                     <button 
-                       onClick={() => setCurrentPage(totalPages)}
-                       className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all border border-slate-100 text-slate-400 hover:bg-white hover:text-primary ${currentPage === totalPages ? 'bg-primary text-white shadow-lg shadow-primary/20' : ''}`}
-                     >
-                       {totalPages}
-                     </button>
-                   </>
-                 )}
+            <DropdownFilter 
+              label="Institute" 
+              val={filters.institute} 
+              setVal={(v) => {
+                const newCourses = v === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
+                                   v === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : [];
+                setFilters({ ...filters, institute: v, course: newCourses[0] || "" });
+              }} 
+              options={["GIT", "GICSA"]} 
+              placeholder="Select Institute"
+              disabled={!filters.date}
+              className="flex-1 min-w-[140px]"
+            />
 
-                 <button 
-                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                   disabled={currentPage === totalPages}
-                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
-                 >
-                    <ChevronRight className="w-4 h-4" />
-                 </button>
-              </div>
-           </div>
-        </div>
+            <DropdownFilter 
+              label="Course" 
+              val={filters.course} 
+              setVal={(v) => setFilters({ ...filters, course: v })} 
+              options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] : 
+                       filters.institute === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : []} 
+              disabled={!filters.date || !filters.institute}
+              placeholder="Select Course"
+              className="flex-1 min-w-[140px]"
+            />
+         </div>
 
-        <StudentModal 
-          isOpen={!!selectedStudent} 
-          student={selectedStudent} 
-          onClose={() => setSelectedStudent(null)} 
-        />
+         <div className="flex flex-wrap items-end gap-3 md:gap-4">
+            <DropdownFilter 
+              label="Status" 
+              val={filters.status} 
+              setVal={(v) => setFilters({ ...filters, status: v })} 
+              options={["All Status", "Present", "Absent"]} 
+              disabled={!filters.date || !filters.institute}
+              placeholder="Select Status"
+              className="flex-1 min-w-[120px]"
+            />
 
-        <div className="h-20" /> {/* Spacer */}
+            <div className="flex-[2] min-w-[200px]">
+               <div className="relative">
+                  <input 
+                    type="text" 
+                    placeholder="Search student..." 
+                    value={filters.search}
+                    onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                    className="w-full h-11 bg-[#F8FAFC] border-none rounded-xl pl-10 pr-4 text-[11px] font-black text-black placeholder:text-black placeholder:font-black focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                  />
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+               </div>
+            </div>
+
+            <button onClick={handleReset} className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
+               <RotateCcw className="w-3.5 h-3.5" />
+               Reset
+            </button>
+         </div>
       </div>
-    </AdminLayout>
+
+      {/* Students Table Section */}
+      <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+         <div className="p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/10">
+            <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate">
+              Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
+            </h3>
+            <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all w-full sm:w-auto justify-center">
+               <Download className="w-3.5 h-3.5" />
+               Export
+            </button>
+         </div>
+         
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
+             {isLoading ? (
+                <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                   <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
+                      <span className="w-8 h-[1px] bg-slate-200"></span>
+                      Processing Records
+                      <span className="w-8 h-[1px] bg-slate-200"></span>
+                   </p>
+                </div>
+             ) : (
+                <table className="w-full text-left min-w-[900px]">
+                   <thead>
+                      {table.getHeaderGroups().map(headerGroup => (
+                        <tr key={headerGroup.id} className="bg-slate-50/50">
+                          {headerGroup.headers.map(header => (
+                            <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                              {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                            </th>
+                          ))}
+                        </tr>
+                      ))}
+                   </thead>
+                   <tbody className="divide-y divide-slate-50">
+                      {currentStudentsRows.length > 0 ? (
+                        currentStudentsRows.map((row) => (
+                          <tr 
+                            key={row.id} 
+                            onClick={() => setSelectedStudent(row.original)}
+                            className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
+                          >
+                            {row.getVisibleCells().map(cell => (
+                              <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </td>
+                            ))}
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={columns.length} className="py-20 text-center">
+                             <div className="flex flex-col items-center gap-4 text-slate-300">
+                                <Search className="w-12 h-12 opacity-20" />
+                                <p className="font-bold text-sm tracking-tight capitalize">
+                                  No students found for this selection
+                                </p>
+                             </div>
+                          </td>
+                        </tr>
+                      )}
+                   </tbody>
+                </table>
+             )}
+          </div>
+
+         {/* Pagination */}
+         <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest order-2 sm:order-1 text-center sm:text-left">
+               Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} students
+            </span>
+            <div className="flex items-center gap-2 order-1 sm:order-2">
+               <button 
+                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                 disabled={currentPage === 1}
+                 className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+               >
+                  <ChevronLeft className="w-4 h-4" />
+               </button>
+               
+               {[...Array(Math.min(5, totalPages))].map((_, i) => (
+                 <button 
+                   key={i + 1}
+                   onClick={() => setCurrentPage(i + 1)}
+                   className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all ${
+                     currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:bg-white hover:text-primary'
+                   }`}
+                 >
+                   {i + 1}
+                 </button>
+               ))}
+               
+               {totalPages > 5 && (
+                 <>
+                   <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-slate-300">
+                      <MoreHorizontal className="w-4 h-4" />
+                   </div>
+                   <button 
+                     onClick={() => setCurrentPage(totalPages)}
+                     className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all border border-slate-100 text-slate-400 hover:bg-white hover:text-primary ${currentPage === totalPages ? 'bg-primary text-white shadow-lg shadow-primary/20' : ''}`}
+                   >
+                     {totalPages}
+                   </button>
+                 </>
+               )}
+
+               <button 
+                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                 disabled={currentPage === totalPages}
+                 className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+               >
+                  <ChevronRight className="w-4 h-4" />
+               </button>
+            </div>
+         </div>
+      </div>
+
+      <StudentModal 
+        isOpen={!!selectedStudent} 
+        student={selectedStudent} 
+        onClose={() => setSelectedStudent(null)} 
+      />
+
+      <div className="h-20" /> {/* Spacer */}
+    </div>
   );
+
+  return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
 
 // Subcomponents
