@@ -302,11 +302,12 @@ export default function CourseManagement() {
                     <h3 className="text-3xl font-black text-[#1E293B] tracking-tighter mb-4">{selectedCourse.name}</h3>
                     <p className="text-sm font-bold text-slate-400 leading-relaxed mb-8 max-w-2xl">{selectedCourse.description}</p>
                     
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
                        <DetailItem label="Course ID" val={selectedCourse.id} />
+                       <DetailItem label="Course Fee" val={`₹ ${(selectedCourse.fee || 0).toFixed(2)} Lakh`} />
                        <DetailItem label="Duration" val={selectedCourse.duration} />
-                       <DetailItem label="Start Date" val={selectedCourse.startDate} />
-                       <DetailItem label="End Date" val={selectedCourse.endDate} />
+                       <DetailItem label="Faculty" val={selectedCourse.faculty} />
+                       <DetailItem label="Status" val={selectedCourse.status} />
                     </div>
                   </div>
 
