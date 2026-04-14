@@ -5,6 +5,7 @@ import { User, Lock, ArrowRight, GraduationCap, ShieldCheck, Briefcase } from "l
 import { useAuth } from "../../context/AuthContext";
 import { SpecialText } from "../../components/ui/special-text";
 
+import { loginUser } from "../../services/authApi";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,43 +14,79 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   
-  const { login } = useAuth();
   const navigate = useNavigate();
+
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+  //   setError("");
+    
+  //   const isAdminEmail = email === "Admin@gmail.com";
+  //   const isFacultyEmail = ["Student@gmail.com", "Attendance@gmail.com", "Course@gmail.com", "Fees@gmail.com"].includes(email);
+
+  //   if (activeRole === 'admin' && !isAdminEmail) {
+  //     setError("Unauthorized access. Admin credentials required.");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   if (activeRole === 'faculty' && !isFacultyEmail) {
+  //     setError("Unauthorized access. Faculty credentials required.");
+  //     setLoading(false);
+  //     return;
+  //   }
+
+  //   setTimeout(() => {
+  //     const success = login(email, password);
+      
+  //     if (success) {
+  //       setLoginSuccess(true);
+  //       setLoading(false);
+
+  //       // Transition duration ~2.5s
+  //       setTimeout(() => {
+  //         // Redirection logic based on role
+  //         if (activeRole === 'admin') {
+  //           navigate('/admin');
+  //         } else {
+  //           // Check for specialized faculty routes
+  //           if (email === "Student@gmail.com") {
+  //             navigate('/faculty/student-module');
+  //           } else if (email === "Attendance@gmail.com") {
+  //             navigate('/faculty/attendance-module');
+  //           } else if (email === "Course@gmail.com") {
+  //             navigate('/faculty/course-module');
+  //           } else if (email === "Fees@gmail.com") {
+  //             navigate('/faculty/fees-module');
+  //           } else {
+  //             navigate('/faculty/dashboard');
+  //           }
+  //         }
+  //       }, 2500);
+  //     } else {
+  //       setError("Invalid security key. Please check your credentials.");
+  //       setLoading(false);
+  //     }
+  //   }, 800);
+  // };
+
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-    
-    const isAdminEmail = email === "Admin@gmail.com";
-    const isFacultyEmail = ["Student@gmail.com", "Attendance@gmail.com", "Course@gmail.com", "Fees@gmail.com"].includes(email);
 
-    if (activeRole === 'admin' && !isAdminEmail) {
-      setError("Unauthorized access. Admin credentials required.");
-      setLoading(false);
-      return;
-    }
+    try {
+      const result = await login(email, password, activeRole);
 
-    if (activeRole === 'faculty' && !isFacultyEmail) {
-      setError("Unauthorized access. Faculty credentials required.");
-      setLoading(false);
-      return;
-    }
-
-    setTimeout(() => {
-      const success = login(email, password);
-      
-      if (success) {
+      if (result.success) {
         setLoginSuccess(true);
-        setLoading(false);
-
-        // Transition duration ~2.5s
         setTimeout(() => {
-          // Redirection logic based on role
           if (activeRole === 'admin') {
             navigate('/admin');
           } else {
-            // Check for specialized faculty routes
+            // Specialized faculty routes based on email (mock-like but integrated)
             if (email === "Student@gmail.com") {
               navigate('/faculty/student-module');
             } else if (email === "Attendance@gmail.com") {
@@ -62,13 +99,18 @@ export default function LoginPage() {
               navigate('/faculty/dashboard');
             }
           }
-        }, 2500);
+        }, 1500);
       } else {
-        setError("Invalid security key. Please check your credentials.");
+        setError(result.message || "Invalid credentials or server error");
         setLoading(false);
       }
-    }, 800);
+    } catch (err) {
+      console.error(err);
+      setError("An unexpected error occurred");
+      setLoading(false);
+    }
   };
+
 
   if (loginSuccess) {
     return (

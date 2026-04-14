@@ -1,9 +1,13 @@
-import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
-import { STUDENT_RECORDS_DATA, STUDENT_FEES_DATA, getEnrollmentDistribution, getMonthlyFeeTrends, INITIAL_COURSES, generateAttendanceLogs } from '../lib/constants';
+import React, { createContext, useContext, useState, useMemo, useEffect, useCallback } from 'react';
+import { STUDENT_RECORDS_DATA, STUDENT_FEES_DATA, getEnrollmentDistribution, getMonthlyFeeTrends, INITIAL_COURSES, generateAttendanceLogs, INITIAL_FACULTIES } from '../lib/constants';
+
+import * as adminApi from '../services/adminApi';
 
 const AdminDataContext = createContext();
 
 export const AdminDataProvider = ({ children }) => {
+  const [isBackendOnline, setIsBackendOnline] = useState(true);
+
   // Initialize from LocalStorage if available, otherwise use Constants
   const [students, setStudents] = useState(() => {
     const saved = localStorage.getItem('admin_master_students_v3');
@@ -25,7 +29,12 @@ export const AdminDataProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : generateAttendanceLogs(students);
   });
 
-  // Persist changes
+  const [faculty, setFaculty] = useState(() => {
+    const saved = localStorage.getItem('admin_master_faculty_v1');
+    return saved ? JSON.parse(saved) : INITIAL_FACULTIES; // Fallback to constants if needed
+  });
+
+  // Persist changes to LocalStorage (as Cache)
   useEffect(() => {
     localStorage.setItem('admin_master_students_v3', JSON.stringify(students));
   }, [students]);
@@ -42,6 +51,58 @@ export const AdminDataProvider = ({ children }) => {
     localStorage.setItem('admin_master_attendance_v3', JSON.stringify(attendanceLogs));
   }, [attendanceLogs]);
 
+  useEffect(() => {
+    localStorage.setItem('admin_master_faculty_v1', JSON.stringify(faculty));
+  }, [faculty]);
+
+  // Sync Handlers
+  const syncStudents = useCallback(async () => {
+    try {
+      const res = await adminApi.getStudents();
+      const mapped = res.data.map(s => ({
+        studentId: String(s.id),
+        name: s.name || "",
+        email: s.email || "",
+        phone: s.phone || "",
+        course: s.course || "",
+        status: s.status || "Active",
+        institute: s.institute || "",
+        admissionDate: s.admission_date || "",
+        address: s.address || "",
+        avatar: `https://i.pravatar.cc/150?u=${s.id}`
+      }));
+      setStudents(mapped);
+      setIsBackendOnline(true);
+      return mapped;
+    } catch (err) {
+      console.error("Student Sync Failed:", err);
+      setIsBackendOnline(false);
+      return students; // Fallback to current state
+    }
+  }, [students]);
+
+  const syncAttendance = useCallback(async () => {
+    try {
+      const res = await adminApi.getAttendance();
+      // Assuming backend returns logs with student_id, date, status
+      const mapped = res.data.map(l => ({
+        id: l.id,
+        studentId: String(l.student_id),
+        date: l.date,
+        status: l.status,
+        checkIn: l.check_in || "-",
+        remarks: l.remarks || "-"
+      }));
+      setAttendanceLogs(mapped);
+      setIsBackendOnline(true);
+      return mapped;
+    } catch (err) {
+      console.error("Attendance Sync Failed:", err);
+      setIsBackendOnline(false);
+      return attendanceLogs;
+    }
+  }, [attendanceLogs]);
+
   // Dynamic Chart Helpers using current state
   const getEnrollmentStats = (year, monthIndex) => {
     const monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"];
@@ -49,13 +110,13 @@ export const AdminDataProvider = ({ children }) => {
     const targetMonth = monthNamesShort[monthIndex];
 
     const filtered = students.filter(s => 
-      s.admissionDate.includes(targetMonth) && s.admissionDate.includes(targetYear)
+      s.admissionDate?.includes(targetMonth) && s.admissionDate?.includes(targetYear)
     );
 
-    const courses = ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)", "BSC (IT)", "MSC (IT) INT", "BCA"];
+    const coursesList = ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)", "BSC (IT)", "MSC (IT) INT", "BCA"];
     const colors = ['#4F46E5', '#7C3AED', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
-    return courses.map((course, i) => {
+    return coursesList.map((course, i) => {
       const count = filtered.filter(s => s.course === course).length;
       return { name: course, value: count, color: colors[i] };
     });
@@ -73,9 +134,9 @@ export const AdminDataProvider = ({ children }) => {
       const monthName = month.split(' ')[0];
       
       const actualCollection = fees.reduce((total, student) => {
-        const monthTransactions = student.history.filter(h => 
+        const monthTransactions = student.history?.filter(h => 
           h.date.toUpperCase().includes(monthName.toUpperCase()) && h.date.includes(year)
-        );
+        ) || [];
         return total + monthTransactions.reduce((sum, t) => sum + t.amount, 0);
       }, 0);
 
@@ -106,7 +167,7 @@ export const AdminDataProvider = ({ children }) => {
         // Find logs for this month/year
         const monthLogs = attendanceLogs.filter(l => 
             l.date.includes(`${year}-${(monthFullNames.indexOf(monthName) + 1).toString().padStart(2, '0')}`) ||
-            l.date.includes(monthName) && l.date.includes(year)
+            (l.date.includes(monthName) && l.date.includes(year))
         );
 
         let value;
@@ -123,6 +184,45 @@ export const AdminDataProvider = ({ children }) => {
     });
   }, [attendanceLogs]);
 
+  const syncCourses = useCallback(async () => {
+    try {
+      const res = await adminApi.getCourses();
+      setCourses(res.data);
+      setIsBackendOnline(true);
+      return res.data;
+    } catch (err) {
+      console.error("Course Sync Failed:", err);
+      setIsBackendOnline(false);
+      return courses;
+    }
+  }, [courses]);
+
+  const syncFees = useCallback(async () => {
+    try {
+      const res = await adminApi.getFees();
+      setFees(res.data);
+      setIsBackendOnline(true);
+      return res.data;
+    } catch (err) {
+      console.error("Fees Sync Failed:", err);
+      setIsBackendOnline(false);
+      return fees;
+    }
+  }, [fees]);
+
+  const syncFaculty = useCallback(async () => {
+    try {
+      const res = await adminApi.getFaculty();
+      setFaculty(res.data);
+      setIsBackendOnline(true);
+      return res.data;
+    } catch (err) {
+      console.error("Faculty Sync Failed:", err);
+      setIsBackendOnline(false);
+      return faculty; 
+    }
+  }, [faculty]);
+
   const value = {
     students,
     setStudents,
@@ -130,12 +230,22 @@ export const AdminDataProvider = ({ children }) => {
     setFees,
     courses,
     setCourses,
+    faculty,
+    setFaculty,
     attendanceLogs,
     setAttendanceLogs,
+    syncStudents,
+    syncAttendance,
+    syncCourses,
+    syncFees,
+    syncFaculty,
+    isBackendOnline,
     getEnrollmentStats,
     feeTrends: currentFeeTrends,
     attendanceTrends: currentAttendanceTrends
   };
+
+
 
   return (
     <AdminDataContext.Provider value={value}>
@@ -149,3 +259,4 @@ export const useAdminData = () => {
   if (!context) throw new Error('useAdminData must be used within AdminDataProvider');
   return context;
 };
+

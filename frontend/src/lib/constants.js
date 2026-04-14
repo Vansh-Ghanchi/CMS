@@ -182,7 +182,15 @@ export const INITIAL_COURSES = [
   { id: "CRS-1006", name: "BCA", duration: "3 Years", faculty: "Prof. James", institute: "GICSA", students: 210, status: "Active", fee: 2.80, description: "Bachelor of Computer Applications - core logic and development.", startDate: "01 Sep 2023", endDate: "30 Jun 2027" },
 ];
 
+export const INITIAL_FACULTIES = [
+  { id: 'f1', name: "Sarah Gilbert", email: "student@college.com", role: "Student Management" },
+  { id: 'f2', name: "Mark Zuckerberg", email: "attendance@college.com", role: "Attendance Management" },
+  { id: 'f3', name: "Elena Salvatore", email: "course@college.com", role: "Course Management" },
+  { id: 'f4', name: "Bruce Wayne", email: "fees@college.com", role: "Fees Management" },
+];
+
 export const generateAttendanceLogs = (students) => {
+
   const logs = [];
   // Last 5 days for history
   const dates = ["2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11", "2026-04-12"];

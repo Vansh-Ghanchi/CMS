@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { loginUser } from '../services/authApi';
 
 const AuthContext = createContext();
 
@@ -8,40 +9,44 @@ export const AuthProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
-  const login = (email, password) => {
-    let userData = null;
-    // Admin
-    if (email === "Admin@gmail.com" && password === "Admin123") {
-      userData = { 
-        email, 
-        role: 'admin', 
-        name: 'System Admin',
-        avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+  // Handle Session Expiration from API Interceptor
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      // Don't aggressively logout, just alert the user first
+      // Alternatively, you can show a modal here
+      console.warn("Session Expired Event Captured");
+      alert("Your session has expired. Please log in again.");
+      logout();
+    };
+
+    window.addEventListener("session-expired", handleSessionExpired);
+    return () => window.removeEventListener("session-expired", handleSessionExpired);
+  }, []);
+
+  const login = async (email, password, role) => {
+    try {
+      const response = await loginUser({ email, password, role: role.toUpperCase() });
+      const { access_token, user: userData } = response.data;
+
+      // Ensure we have a consistent user object
+      const formattedUser = {
+        ...userData,
+        role: role.toLowerCase(), // Store role in lowercase for the ProtectedRoute logic
+        token: access_token
+      };
+
+      setUser(formattedUser);
+      localStorage.setItem('user', JSON.stringify(formattedUser));
+      localStorage.setItem('token', access_token);
+      
+      return { success: true };
+    } catch (error) {
+      console.error("Login Error:", error);
+      return { 
+        success: false, 
+        message: error.message || "Invalid credentials or server unavailable" 
       };
     }
-    // Faculty 1: Student
-    else if (email === "Student@gmail.com" && password === "Student123") {
-      userData = { email, role: 'faculty-1', name: 'Faculty 1', module: 'Student Management' };
-    }
-    // Faculty 2: Attendance
-    else if (email === "Attendance@gmail.com" && password === "Attendance123") {
-      userData = { email, role: 'faculty-2', name: 'Faculty 2', module: 'Attendance Management' };
-    }
-    // Faculty 3: Course
-    else if (email === "Course@gmail.com" && password === "Course123") {
-      userData = { email, role: 'faculty-3', name: 'Faculty 3', module: 'Course Management' };
-    }
-    // Faculty 4: Fees
-    else if (email === "Fees@gmail.com" && password === "Fees123") {
-      userData = { email, role: 'faculty-4', name: 'Faculty 4', module: 'Fees Management' };
-    }
-
-    if (userData) {
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
-      return true;
-    }
-    return false;
   };
 
   const updateUser = (data) => {
@@ -55,6 +60,8 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    // Optional: window.location.href = "/login";
   };
 
   return (
@@ -65,3 +72,4 @@ export const AuthProvider = ({ children }) => {
 };
 
 export const useAuth = () => useContext(AuthContext);
+

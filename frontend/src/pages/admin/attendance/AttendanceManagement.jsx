@@ -15,17 +15,41 @@ import { InfinityLoader } from "../../../components/ui/loader-13";
 import { cardVariants, buttonVariants, staggerContainer, tableRowVariants } from "../../../utils/motion";
 
 export default function AttendanceManagement({noLayout = false, hideStats = false }) {
-  const { students: ALL_STUDENTS, attendanceLogs: ATTENDANCE_LOGS, setAttendanceLogs } = useAdminData();
+  const { 
+    students: ALL_STUDENTS, 
+    attendanceLogs: ATTENDANCE_LOGS, 
+    syncAttendance, 
+    isBackendOnline 
+  } = useAdminData();
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
   const itemsPerPage = 7;
   const [isLoading, setIsLoading] = useState(false);
   const isInitialMount = useRef(true);
 
+  useEffect(() => {
+    const initFetch = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await syncAttendance();
+      } catch (err) {
+        setError("Database Connection Failed. Running in Offline Mode.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    initFetch();
+  }, [syncAttendance]);
+
   // Filter States
   const [filters, setFilters] = useState({
-    date: "2026-04-12", // Default to the latest date in our mock history
+    date: new Date().toISOString().split('T')[0], // Default to today
     institute: "",
     course: "",
     status: "All Status",
@@ -35,7 +59,7 @@ export default function AttendanceManagement({noLayout = false, hideStats = fals
   const handleReset = () => {
     setIsLoading(true);
     setFilters({
-      date: "2026-04-12",
+      date: new Date().toISOString().split('T')[0],
       institute: "",
       course: "",
       status: "All Status",
@@ -46,24 +70,24 @@ export default function AttendanceManagement({noLayout = false, hideStats = fals
 
     setTimeout(() => {
       setIsLoading(false);
-    }, 1700);
+    }, 800);
   };
 
-  // Trigger loading on any relevant filter change
+  // Trigger local loading effect on filter change
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
 
-    // Capture current values to check if everything is empty/default (handled by reset separately)
     setIsLoading(true);
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 1700);
+    }, 800);
 
     return () => clearTimeout(timer);
   }, [filters.date, filters.institute, filters.course, filters.status, filters.search]);
+
 
   // 3. Dynamic Calculation Logic
   const stats = useMemo(() => {
@@ -189,49 +213,43 @@ export default function AttendanceManagement({noLayout = false, hideStats = fals
   const rows = table.getRowModel().rows;
   const currentStudentsRows = rows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-const content = (
-  <>
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center">
+        <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-[#0284c7]" />
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8">Fetching Attendance Records...</p>
+      </div>
+    );
+  }
+
+  const content = (
+    <>
       <div className="flex flex-col gap-8">
         {/* Header */}
-        <div>
-          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Monitor and manage student attendance</h2>
-          {/* <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Monitor and manage student attendance</p> */}
+        <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200">
+          <div>
+            <h2 className="text-3xl font-bold text-[#0f172a] tracking-tight">Attendance Control</h2>
+            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-widest opacity-60">System Registry & Real-time Monitoring</p>
+          </div>
+          <div className={`px-4 py-2 rounded-full flex items-center gap-2 ${isBackendOnline ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${isBackendOnline ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+            <span className="text-[10px] font-black uppercase tracking-widest">{isBackendOnline ? 'Online' : 'Offline Cache'}</span>
+          </div>
         </div>
+
+        {error && !hideStats && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 text-amber-700">
+            <AlertCircle className="w-4 h-4" />
+            <p className="text-[11px] font-bold uppercase tracking-wider">{error}</p>
+          </motion.div>
+        )}
 
         {/* Dynamic Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          <StatCard
-            i={0}
-            label="Today's Attendance"
-            val={`${stats.todayPercentage}%`}
-            sub={`${stats.presentToday} / ${stats.totalStudentsCount} present`}
-            color="blue"
-            icon={CheckCircle}
-          />
-          <StatCard
-            i={1}
-            label="This Month's Average"
-            val={`${stats.monthlyAverage}%`}
-            sub="Average attendance"
-            color="emerald"
-            icon={Calendar}
-          />
-          <StatCard
-            i={2}
-            label="Total Students"
-            val={stats.totalStudentsCount.toString()}
-            sub="Across all courses"
-            color="indigo"
-            icon={User}
-          />
-          <StatCard
-            i={3}
-            label="Absent Today"
-            val={stats.absentToday.toString()}
-            sub={`${stats.absentPercentage}% of total`}
-            color="rose"
-            icon={AlertCircle}
-          />
+          <StatCard i={0} label="Daily Coverage" val={`${stats.todayPercentage}%`} sub={`${stats.presentToday} / ${stats.totalStudentsCount} logs`} color="blue" icon={CheckCircle} />
+          <StatCard i={1} label="Monthly Average" val={`${stats.monthlyAverage}%`} sub="Historical Trend" color="emerald" icon={Calendar} />
+          <StatCard i={2} label="Total Strength" val={stats.totalStudentsCount.toString()} sub="Enrolled Students" color="indigo" icon={User} />
+          <StatCard i={3} label="Absent Track" val={stats.absentToday.toString()} sub={`${stats.absentPercentage}% impact`} color="rose" icon={AlertCircle} />
         </div>
 
         {/* Filters Bar */}
@@ -244,7 +262,7 @@ const content = (
                   type="date"
                   value={filters.date}
                   onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                  className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pr-10 text-[14px] font-medium text-[#0f172a] focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none"
+                  className="w-full bg-slate-50 border border-[#f1f5f9] rounded-xl px-4 py-2.5 pr-10 text-[14px] font-medium text-[#0f172a] focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none"
                 />
                 <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
               </div>
@@ -260,7 +278,6 @@ const content = (
               }}
               options={["GIT", "GICSA"]}
               placeholder="Select Institute"
-              disabled={!filters.date}
               className="flex-1 min-w-[140px]"
             />
 
@@ -270,7 +287,7 @@ const content = (
               setVal={(v) => setFilters({ ...filters, course: v })}
               options={filters.institute === "GIT" ? ["B-Tech (CS)", "B-Tech (CSE)", "B-Tech (AI)"] :
                 filters.institute === "GICSA" ? ["BSC (IT)", "MSC (IT) INT", "BCA"] : []}
-              disabled={!filters.date || !filters.institute}
+              disabled={!filters.institute}
               placeholder="Select Course"
               className="flex-1 min-w-[140px]"
             />
@@ -282,7 +299,6 @@ const content = (
               val={filters.status}
               setVal={(v) => setFilters({ ...filters, status: v })}
               options={["All Status", "Present", "Absent"]}
-              disabled={!filters.date || !filters.institute}
               placeholder="Select Status"
               className="flex-1 min-w-[120px]"
             />
@@ -295,14 +311,14 @@ const content = (
                   placeholder="Search student..."
                   value={filters.search}
                   onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                  className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
+                  className="w-full bg-slate-50 border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               </div>
             </div>
 
-            <button onClick={handleReset} className="bg-slate-50 text-[#0f172a] border border-[#e2e8f0] rounded-xl px-4 py-2.5 hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0 font-bold text-[12px] active:scale-95">
-              <RotateCcw className="w-4 h-4" />
+            <button onClick={handleReset} className="bg-slate-100 text-[#0f172a] border-none rounded-xl px-6 py-2.5 hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0 font-black text-[10px] uppercase tracking-widest active:scale-95 shadow-sm">
+              <RotateCcw className="w-3.5 h-3.5" />
               Reset
             </button>
           </div>
@@ -311,20 +327,16 @@ const content = (
         {/* Students Table Section */}
         <div className="bg-white rounded-[24px] border border-[#e2e8f0] shadow-sm overflow-hidden flex flex-col">
           <div className="p-6 md:p-8 border-b border-[#f1f5f9] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#f8fafc]">
-            <h3 className="text-lg md:text-xl font-bold text-[#0f172a] tracking-tight truncate">
+            <h3 className="text-lg md:text-xl font-bold text-[#0f172a] tracking-tight truncate uppercase">
               Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
             </h3>
           </div>
 
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
             {isLoading ? (
-              <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
-                <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-[#0284c7] [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(2,132,199,0.2)]" />
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
-                  <span className="w-8 h-[1px] bg-[#f1f5f9]"></span>
-                  Processing Records
-                  <span className="w-8 h-[1px] bg-[#f1f5f9]"></span>
-                </p>
+              <div className="py-32 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-[#0284c7]" />
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8">Refreshing Logs...</p>
               </div>
             ) : (
               <table className="w-full text-left min-w-[900px]">
@@ -356,11 +368,11 @@ const content = (
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={columns.length} className="py-20 text-center">
-                        <div className="flex flex-col items-center gap-4 text-slate-300">
-                          <Search className="w-12 h-12 opacity-20" />
-                          <p className="font-bold text-sm tracking-tight capitalize">
-                            No students found for this selection
+                      <td colSpan={columns.length} className="py-24 text-center">
+                        <div className="flex flex-col items-center gap-4">
+                          <Search className="w-12 h-12 text-slate-200" />
+                          <p className="font-black text-[10px] text-slate-400 uppercase tracking-widest">
+                            No records found for this configuration
                           </p>
                         </div>
                       </td>
@@ -380,7 +392,7 @@ const content = (
               <button
                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-[#f1f5f9] flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0284c7] transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                className="w-10 h-10 rounded-xl border border-[#f1f5f9] flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0284c7] transition-all disabled:opacity-30 disabled:hover:bg-transparent"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -389,38 +401,23 @@ const content = (
                 <button
                   key={i + 1}
                   onClick={() => setCurrentPage(i + 1)}
-                  className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-bold transition-all ${currentPage === i + 1 ? 'bg-[#0284c7] text-white shadow-lg shadow-indigo-500/20' : 'border border-[#f1f5f9] text-slate-400 hover:bg-white hover:text-[#0284c7]'
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center text-[11px] font-bold transition-all ${currentPage === i + 1 ? 'bg-[#0284c7] text-white shadow-lg shadow-[#0284c7]/20 border-none' : 'border border-[#f1f5f9] text-slate-400 hover:bg-white hover:text-[#0284c7]'
                     }`}
                 >
                   {i + 1}
                 </button>
               ))}
 
-              {totalPages > 5 && (
-                <>
-                  <div className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center text-slate-300">
-                    <MoreHorizontal className="w-4 h-4" />
-                  </div>
-                  <button
-                    onClick={() => setCurrentPage(totalPages)}
-                    className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-bold transition-all border border-[#f1f5f9] text-slate-400 hover:bg-white hover:text-[#0284c7] ${currentPage === totalPages ? 'bg-[#0284c7] text-white shadow-lg shadow-indigo-500/20' : ''}`}
-                  >
-                    {totalPages}
-                  </button>
-                </>
-              )}
-
               <button
                 onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                 disabled={currentPage === totalPages}
-                className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-[#f1f5f9] flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0284c7] transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                className="w-10 h-10 rounded-xl border border-[#f1f5f9] flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0284c7] transition-all disabled:opacity-30 disabled:hover:bg-transparent"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>
         </div>
-
       </div>
       <StudentModal
         isOpen={!!selectedStudent}
@@ -429,8 +426,10 @@ const content = (
       />
     </>
   );
+
   return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
+
 
 // Subcomponents
 function StatCard({ label, val, sub, icon: Icon, color, i }) {

@@ -12,20 +12,38 @@ import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
 export default function CourseManagement({noLayout = false, hideStats = false }) {
-  const { students, courses, setCourses } = useAdminData();
+  const { students, courses, syncCourses, isBackendOnline } = useAdminData();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
   const [filters, setFilters] = useState({ search: "", status: "All Status", faculty: "All Faculty", feeRange: "All Fees", institute: "All Institute" });
   const itemsPerPage = 6;
   const [isLoading, setIsLoading] = useState(false);
   const isInitialMount = useRef(true);
 
+  useEffect(() => {
+    const initFetch = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await syncCourses();
+      } catch (err) {
+        setError("Database Connection Failed. Running in Offline Mode.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    initFetch();
+  }, [syncCourses]);
+
   // Filter Logic
   const filteredCourses = useMemo(() => {
     return courses.filter(c => {
-      const matchesSearch = c.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        c.id.toLowerCase().includes(filters.search.toLowerCase());
+      const matchesSearch = c.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        c.id?.toLowerCase().includes(filters.search.toLowerCase());
       const matchesStatus = filters.status === "All Status" || c.status === filters.status;
       const matchesFaculty = filters.faculty === "All Faculty" || c.faculty === filters.faculty;
       const matchesInstitute = filters.institute === "All Institute" || c.institute === filters.institute;
@@ -39,20 +57,17 @@ export default function CourseManagement({noLayout = false, hideStats = false })
     });
   }, [courses, filters]);
 
-  // Trigger loading on any relevant filter change
+  // Trigger local loading effect on filter change
   useEffect(() => {
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
-
     setIsLoading(true);
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1700);
-
+    const timer = setTimeout(() => setIsLoading(false), 800);
     return () => clearTimeout(timer);
   }, [filters.search, filters.status, filters.faculty, filters.feeRange, filters.institute]);
+
 
   const courseColumns = useMemo(() => [
     {
@@ -193,17 +208,36 @@ export default function CourseManagement({noLayout = false, hideStats = false })
 
   const facultyOptions = ["All Faculty", ...new Set(courses.map(c => c.faculty))];
 
-const content = (
-  <>
-   
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center">
+        <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary" />
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8">Fetching Academic Portfolio...</p>
+      </div>
+    );
+  }
+
+  const content = (
+    <>
       <div className="flex flex-col gap-8">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200">
           <div>
-            <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Manage academic programs and faculty assignments</h2>
-            {/* <p className="text-[13px] font-medium text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p> */}
+            <h2 className="text-3xl font-bold text-[#0f172a] tracking-tight">Academic Programs</h2>
+            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-widest opacity-60">Program Management & Faculty Synergy</p>
+          </div>
+          <div className={`px-4 py-2 rounded-full flex items-center gap-2 ${isBackendOnline ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${isBackendOnline ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+            <span className="text-[10px] font-black uppercase tracking-widest">{isBackendOnline ? 'Online' : 'Offline Cache'}</span>
           </div>
         </div>
+
+        {error && !hideStats && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 text-amber-700">
+            <AlertCircle className="w-4 h-4" />
+            <p className="text-[11px] font-bold uppercase tracking-wider">{error}</p>
+          </motion.div>
+        )}
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
@@ -228,7 +262,7 @@ const content = (
                   placeholder="ID or Course Name..." 
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
+                  className="w-full bg-slate-50 border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
                 />
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
              </div>
@@ -249,15 +283,11 @@ const content = (
           </div>
           <div className="overflow-x-auto md:overflow-visible lg:overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
              {isLoading ? (
-                <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
-                   <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
-                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
-                      <span className="w-8 h-[1px] bg-slate-200"></span>
-                      Processing Records
-                      <span className="w-8 h-[1px] bg-slate-200"></span>
-                   </p>
+                <div className="py-32 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
+                   <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary" />
+                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8">Analyzing Records...</p>
                 </div>
-             ) : (
+             ) : filteredCourses.length > 0 ? (
                 <table className="w-full text-left min-w-[900px]">
                   <thead>
                     {table.getHeaderGroups().map(headerGroup => (
@@ -286,6 +316,12 @@ const content = (
                     ))}
                   </tbody>
                 </table>
+             ) : (
+              <div className="py-32 text-center">
+                <BookOpen className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                <h3 className="text-lg font-black text-[#1E293B] uppercase tracking-tight">No Courses Found</h3>
+                <p className="text-xs font-bold text-slate-400 mt-1">Try adjusting your filters or search query.</p>
+              </div>
              )}
           </div>
           
@@ -295,20 +331,21 @@ const content = (
                 Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredCourses.length)} of {filteredCourses.length} entries
              </span>
              <div className="flex items-center gap-2 order-1 sm:order-2">
-                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all duration-200 active:scale-95"><ChevronLeft className="w-4 h-4" /></button>
-                {[...Array(Math.min(5, totalPages))].map((_, i) => (
+                <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} className="w-10 h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all duration-200 active:scale-95"><ChevronLeft className="w-4 h-4" /></button>
+                {[...Array(totalPages)].map((_, i) => (
                   <button 
                     key={i} 
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-9 h-9 md:w-10 md:h-10 rounded-xl text-[10px] md:text-[11px] font-bold transition-all duration-200 active:scale-95 ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:text-primary hover:bg-white'}`}
+                    className={`w-10 h-10 rounded-xl text-[11px] font-bold transition-all duration-200 active:scale-95 ${currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20 border-none' : 'border border-slate-100 text-slate-400 hover:text-primary hover:bg-white'}`}
                   >
                     {i + 1}
                   </button>
                 ))}
-                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all duration-200 active:scale-95"><ChevronRight className="w-4 h-4" /></button>
+                <button onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))} className="w-10 h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all duration-200 active:scale-95"><ChevronRight className="w-4 h-4" /></button>
              </div>
           </div>
         </div>
+
 
         {/* Details Section */}
         <AnimatePresence mode="wait">

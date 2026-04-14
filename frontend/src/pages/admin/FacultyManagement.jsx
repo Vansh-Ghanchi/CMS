@@ -1,8 +1,11 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
 import { UserPlus, ShieldAlert, Mail, Phone, Lock, User, Briefcase, Image as ImageIcon, CheckCircle2, AlertCircle, ChevronDown, UserSquare2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useAdminData } from "../../context/AdminDataContext";
+import * as adminApi from "../../services/adminApi";
+import { InfinityLoader } from "../../components/ui/loader-13";
 
 const FACULTY_ROLES = [
   "Student Management",
@@ -11,14 +14,26 @@ const FACULTY_ROLES = [
   "Fees Management"
 ];
 
-const INITIAL_FACULTIES = [
-  { id: 'f1', name: "Sarah Gilbert", email: "student@college.com", role: "Student Management" },
-  { id: 'f2', name: "Mark Zuckerberg", email: "attendance@college.com", role: "Attendance Management" },
-  { id: 'f3', name: "Elena Salvatore", email: "course@college.com", role: "Course Management" },
-  { id: 'f4', name: "Bruce Wayne", email: "fees@college.com", role: "Fees Management" },
-];
-
 export default function FacultyManagement() {
+  const { faculty: INITIAL_FACULTIES, syncFaculty, isBackendOnline } = useAdminData();
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const initFetch = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        await syncFaculty();
+      } catch (err) {
+        setError("Database Connection Failed. Running in Offline Mode.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    initFetch();
+  }, [syncFaculty]);
+
   // Registration State
   const [registerForm, setRegisterForm] = useState({
     name: "",
@@ -72,7 +87,7 @@ export default function FacultyManagement() {
   const handleResetChange = (e) => {
     const { name, value } = e.target;
     if (name === 'facultyId') {
-      const selected = INITIAL_FACULTIES.find(f => f.id === value);
+      const selected = INITIAL_FACULTIES.find(f => f.id === value || String(f.id) === value);
       setResetForm(prev => ({ 
         ...prev, 
         [name]: value,
@@ -89,9 +104,9 @@ export default function FacultyManagement() {
     setTimeout(() => setNotification(null), 3000);
   };
 
-  const handleCreateFaculty = (e) => {
+  const handleCreateFaculty = async (e) => {
     e.preventDefault();
-    if (Object.values(registerForm).some((val, i) => i !== 4 && val === "")) {
+    if (Object.values(registerForm).some((val, i) => i !== 4 && i !== 7 && val === "")) {
       showNotification("Please fill all required fields", "error");
       return;
     }
@@ -99,13 +114,27 @@ export default function FacultyManagement() {
       showNotification("Passwords do not match", "error");
       return;
     }
-    showNotification("Faculty account created successfully!");
-    setRegisterForm({
-      name: "", email: "", phone: "", role: "Student Management", employeeId: "", password: "", confirmPassword: ""
-    });
+    
+    try {
+      await adminApi.createFaculty({
+        name: registerForm.name,
+        email: registerForm.email,
+        phone_number: registerForm.phone,
+        role: registerForm.role,
+        employee_id: registerForm.employeeId,
+        password: registerForm.password
+      });
+      showNotification("Faculty account created successfully!");
+      setRegisterForm({
+        name: "", email: "", phone: "", role: "Student Management", employeeId: "", password: "", confirmPassword: "", avatar: ""
+      });
+      syncFaculty();
+    } catch (err) {
+      showNotification(err.response?.data?.detail || "Failed to create faculty", "error");
+    }
   };
 
-  const handleUpdatePassword = (e) => {
+  const handleUpdatePassword = async (e) => {
     e.preventDefault();
     if (!resetForm.facultyId || !resetForm.newPassword || !resetForm.confirmPassword) {
       showNotification("Please fill all fields", "error");
@@ -115,17 +144,50 @@ export default function FacultyManagement() {
       showNotification("Passwords do not match", "error");
       return;
     }
-    showNotification("Password updated successfully!");
-    setResetForm({ facultyId: "", fullName: "", newPassword: "", confirmPassword: "" });
+
+    try {
+      await adminApi.resetFacultyPassword({
+        faculty_id: resetForm.facultyId,
+        new_password: resetForm.newPassword
+      });
+      showNotification("Password updated successfully!");
+      setResetForm({ facultyId: "", fullName: "", role: "Student Management", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      showNotification(err.response?.data?.detail || "Failed to reset password", "error");
+    }
   };
+
+
+  if (loading) {
+    return (
+      <div className="h-[60vh] flex flex-col items-center justify-center">
+        <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary" />
+        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8">Syncing Faculty Database...</p>
+      </div>
+    );
+  }
 
   return (
     <AdminLayout>
       <div className="flex flex-col gap-6 md:gap-8">
-        <div className="flex flex-col">
-           <h2 className="text-xl md:text-2xl font-black text-[#0f172a] tracking-tighter leading-tight">Faculty Management</h2>
-           <p className="text-[9px] md:text-[10px] pt-1 font-bold text-slate-400 uppercase tracking-widest italic leading-none">Control authority and system permissions</p>
+        <div className="flex justify-between items-center bg-white p-6 rounded-2xl border border-slate-200">
+          <div className="flex flex-col">
+            <h2 className="text-3xl font-bold text-[#0f172a] tracking-tight">Faculty Management</h2>
+            <p className="text-[10px] font-black text-slate-400 mt-1 uppercase tracking-widest opacity-60">Control authority and system permissions</p>
+          </div>
+          <div className={`px-4 py-2 rounded-full flex items-center gap-2 ${isBackendOnline ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600'}`}>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${isBackendOnline ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+            <span className="text-[10px] font-black uppercase tracking-widest">{isBackendOnline ? 'Online' : 'Offline Mode'}</span>
+          </div>
         </div>
+
+        {error && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-center gap-3 text-amber-700">
+            <AlertCircle className="w-4 h-4" />
+            <p className="text-[11px] font-bold uppercase tracking-wider">{error}</p>
+          </motion.div>
+        )}
+
 
         {notification && (
           <motion.div 
