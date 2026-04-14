@@ -11,7 +11,7 @@ import {
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
-export default function CourseManagement({hideStats = false }) {
+export default function CourseManagement({}) {
   const { students, courses, setCourses } = useAdminData();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
