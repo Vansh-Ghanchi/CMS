@@ -16,6 +16,7 @@ const generateStudents = () => {
   const lastNames = ["Khan", "Ali", "Fatima", "Ahmed", "Siddiqui", "Hussain", "Noor", "Farooq", "Gupta", "Mehra", "Sharma", "Kapoor", "Iyer", "Singh", "Bose", "Das", "Patel", "Rao", "Menon", "Verma", "Joshi", "Batra", "Malik", "Shah", "Choudhury"];
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const cities = ["Ahmedabad, Gujarat, India", "Mumbai, Maharashtra, India", "Delhi, India", "Bangalore, Karnataka, India", "Pune, Maharashtra, India", "Jaipur, Rajasthan, India", "Chennai, Tamil Nadu, India", "Hyderabad, Telangana, India"];
 
   let idCounter = 1001;
 
@@ -37,6 +38,7 @@ const generateStudents = () => {
         institute: courseObj.inst,
         course: courseObj.name,
         admissionDate: `${day} ${monthNames[m]} 2025`,
+        address: `${100 + i}, ${cities[(m + i) % cities.length]}`,
         status: Math.random() > 0.1 ? "Active" : "Inactive",
         avatar: `https://i.pravatar.cc/150?u=${idCounter}`
       });
@@ -60,6 +62,7 @@ const generateStudents = () => {
         institute: courseObj.inst,
         course: courseObj.name,
         admissionDate: `${day} ${monthNames[m]} 2026`,
+        address: `${200 + i}, ${cities[(m + i + 2) % cities.length]}`,
         status: "Active",
         avatar: `https://i.pravatar.cc/150?u=${idCounter}`
       });

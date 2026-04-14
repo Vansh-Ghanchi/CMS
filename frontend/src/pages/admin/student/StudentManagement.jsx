@@ -214,7 +214,7 @@ export default function StudentManagement() {
   };
 
   useEffect(() => {
-    localStorage.setItem('admin_students_list_v4', JSON.stringify(students));
+    localStorage.setItem('admin_students_list_v5', JSON.stringify(students));
   }, [students]);
 
   const filteredStudents = useMemo(() => {
@@ -533,7 +533,7 @@ export default function StudentManagement() {
                      </div>
                      <div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Student ID</p>
-                        <h4 className="text-base font-black text-[#0f172a] tracking-tight">{selectedStudent.id}</h4>
+                        <h4 className="text-base font-black text-[#0f172a] tracking-tight">{selectedStudent.studentId}</h4>
                      </div>
                      <div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Admission Date</p>
@@ -559,7 +559,7 @@ export default function StudentManagement() {
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
                            <MapPin className="w-2 h-2" /> Address
                         </p>
-                        <h4 className="text-base font-bold text-[#0f172a] tracking-tight leading-relaxed">{selectedStudent.address}</h4>
+                        <h4 className="text-base font-bold text-[#0f172a] tracking-tight leading-relaxed">{selectedStudent?.address}</h4>
                      </div>
                   </div>
                </div>

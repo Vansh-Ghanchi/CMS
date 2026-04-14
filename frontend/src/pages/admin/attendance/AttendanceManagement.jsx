@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import AdminLayout from "../../../layouts/AdminLayout";
-import { CheckCircle, Calendar, AlertCircle, User, Download, Search, RotateCcw, ChevronLeft, ChevronRight, MoreHorizontal, X, ArrowUpDown } from "lucide-react";
+import { CheckCircle, Calendar, AlertCircle, User, Search, RotateCcw, ChevronLeft, ChevronRight, MoreHorizontal, X, ArrowUpDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   flexRender,
@@ -318,10 +318,6 @@ export default function AttendanceManagement() {
               <h3 className="text-lg md:text-xl font-bold text-[#0f172a] tracking-tight truncate">
                 Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
               </h3>
-              <button className="bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 w-full sm:w-auto">
-                 <Download className="w-4 h-4" />
-                 Export
-              </button>
            </div>
            
             <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
