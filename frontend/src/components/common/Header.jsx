@@ -20,7 +20,7 @@ export default function Header({ title, sub, showSearch = true, onMenuClick }) {
                <Menu className="w-5 h-5" />
             </button>
             <div className="flex flex-col">
-               <h2 className="text-xl font-bold text-[#1E293B] tracking-tight leading-none mb-0.5 md:mb-1 truncate max-w-[150px] md:max-w-none">
+               <h2 className="text-xl md:text-2xl font-bold text-[#1E293B] tracking-normal leading-tight mb-0.5 md:mb-1">
                   {title}
                </h2>
                <p className="text-[13px] font-medium text-[#64748B] opacity-60 truncate max-w-[120px] md:max-w-none">

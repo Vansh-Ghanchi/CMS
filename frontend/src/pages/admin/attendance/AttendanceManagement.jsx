@@ -198,7 +198,7 @@ export default function AttendanceManagement() {
       <div className="flex flex-col gap-8">
         {/* Header */}
          <div>
-          <h2 className="text-3xl font-bold text-[#0f172a] tracking-tight">Attendance Management</h2>
+          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Attendance Management</h2>
           <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Monitor and manage student attendance</p>
         </div>
 

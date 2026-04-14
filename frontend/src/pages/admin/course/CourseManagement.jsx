@@ -200,7 +200,7 @@ export default function CourseManagement() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-[#0f172a] tracking-tight">Course Management</h2>
+            <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Course Management</h2>
             <p className="text-[13px] font-medium text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p>
           </div>
         </div>

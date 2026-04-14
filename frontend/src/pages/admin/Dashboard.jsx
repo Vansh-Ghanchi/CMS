@@ -285,7 +285,7 @@ export default function AdminHome() {
       <div className="mb-14 flex items-end justify-between">
         <div>
            <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">MANAGEMENT PORTAL</p>
-           <h2 className="text-4xl font-bold text-[#0f172a] tracking-tighter leading-none">System Overview</h2>
+           <h2 className="text-4xl font-bold text-[#0f172a] tracking-tight leading-normal">System Overview</h2>
         </div>
         <div className="flex gap-4">
         </div>
@@ -389,8 +389,8 @@ export default function AdminHome() {
                            activeDot={{ r: 6, fill: '#4F46E5', stroke: '#FFFFFF', strokeWidth: 2 }}
                         />
                     </AreaChart>
-                  </ResponsiveContainer>
-               </div>
+                 </ResponsiveContainer>
+              </div>
            </div>
         </div>
 
@@ -495,7 +495,7 @@ export default function AdminHome() {
                         radius={[6, 6, 0, 0]} 
                         barSize={24}
                         shape={(props) => {
-                            const { fill, x, y, width, height } = props;
+                            const { x, y, width, height } = props;
                             // Dynamic color based on attendance %
                             const color = props.value >= 90 ? '#10B981' : (props.value >= 80 ? '#4F46E5' : '#F59E0B');
                             return <rect x={x} y={y} width={width} height={height} fill={color} rx={4} ry={4} />;
@@ -510,7 +510,7 @@ export default function AdminHome() {
       {/* Faculty Section */}
       <div className="space-y-8 md:space-y-10">
          <div className="flex justify-between items-end">
-            <h3 className="text-2xl md:text-3xl font-black text-[#0f172a] tracking-tighter leading-none">Faculty Overview</h3>
+            <h3 className="text-2xl md:text-3xl font-black text-[#0f172a] tracking-tight leading-none">Faculty Overview</h3>
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
