@@ -12,9 +12,17 @@ import {
 
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
+import { cardVariants, buttonVariants, staggerContainer, tableRowVariants } from "../../../utils/motion";
 
-const StatCardShort = ({ icon: Icon, title, value, subtext, color }) => (
-  <div className="bg-white rounded-[20px] p-6 flex items-center gap-6 border border-slate-200 shadow-sm flex-1">
+const StatCardShort = ({ icon: Icon, title, value, subtext, color, i }) => (
+  <motion.div 
+    variants={cardVariants}
+    whileHover="hover"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: i * 0.1 }}
+    className="bg-white rounded-[20px] p-6 flex items-center gap-6 border border-slate-200 shadow-sm flex-1 cursor-default"
+  >
     <div className={`w-14 h-14 rounded-full ${color} bg-opacity-10 flex items-center justify-center text-primary`}>
       <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
     </div>
@@ -23,7 +31,7 @@ const StatCardShort = ({ icon: Icon, title, value, subtext, color }) => (
       <h3 className="text-2xl font-black text-[#1E293B] tracking-tight">{value}</h3>
       <p className="text-[10px] font-bold text-slate-400 mt-0.5">{subtext}</p>
     </div>
-  </div>
+  </motion.div>
 );
 
 const EditStudentModal = ({ isOpen, onClose, student, onSave }) => {
@@ -172,7 +180,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, studentName }) =>
   );
 };
 
-export default function StudentManagement({ noLayout = false }) {
+export default function StudentManagement({ noLayout = false, hideStats = false }) {
   const { searchQuery, setSearchQuery } = useSearch();
   const [localSearch, setLocalSearch] = useState("");
   const { students, setStudents } = useAdminData();
@@ -314,12 +322,15 @@ export default function StudentManagement({ noLayout = false }) {
       header: () => <div className="text-right">ACTIONS</div>,
       cell: ({ row }) => (
         <div className="flex items-center justify-end">
-          <button
+          <motion.button
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
             onClick={(e) => { e.stopPropagation(); setSelectedStudent(row.original); }}
             className="p-2 hover:bg-white rounded-lg border border-slate-200 shadow-sm transition-all"
           >
             <Eye className="w-3.5 h-3.5 text-primary" />
-          </button>
+          </motion.button>
         </div>
       ),
     },
@@ -359,22 +370,25 @@ export default function StudentManagement({ noLayout = false }) {
 
   const content = (
     <>
-      {/* 1. Header Stats Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
-        <StatCardShort icon={Users} title="Total Students" value={students.filter(s => s.institute === "GIT" || s.institute === "GICSA").length} subtext="All registered students" color="bg-indigo-600" />
-        <StatCardShort icon={UserCheck} title="Active Students" value={students.filter(s => s.status === 'Active').length} subtext="Currently active students" color="bg-emerald-600" />
-        <StatCardShort icon={Users} title="Inactive Students" value={students.filter(s => s.status === 'Inactive').length} subtext="Currently inactive students" color="bg-rose-600" />
-        <StatCardShort icon={UserPlus} title="New Admissions" value={newAdmissionsCount} subtext="This month" color="bg-Yellow" />
-      </div>
+      {/* 1. Header Stats Row - Conditionally Hidden */}
+      {!hideStats && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+          <StatCardShort i={0} icon={Users} title="Total Students" value={students.filter(s => s.institute === "GIT" || s.institute === "GICSA").length} subtext="All registered students" color="bg-indigo-600" />
+          <StatCardShort i={1} icon={UserCheck} title="Active Students" value={students.filter(s => s.status === 'Active').length} subtext="Currently active students" color="bg-emerald-600" />
+          <StatCardShort i={2} icon={Users} title="Inactive Students" value={students.filter(s => s.status === 'Inactive').length} subtext="Currently inactive students" color="bg-rose-600" />
+          <StatCardShort i={3} icon={UserPlus} title="New Admissions" value={newAdmissionsCount} subtext="This month" color="bg-Yellow" />
+        </div>
+      )}
 
       {/* 2. Search & Filter Bar */}
       <div className="bg-white rounded-2xl border border-slate-200 p-4 md:p-6 mb-8 flex flex-col gap-4 shadow-sm">
-        <div className="relative w-full h-12">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
+        <div className="relative w-full h-12 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
+          <motion.input
+            whileFocus={{ scale: 1.01 }}
             type="text"
             placeholder="Search by name, email or course..."
-            className="w-full h-full bg-[#F8FAFC] border-none rounded-xl pl-12 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+            className="w-full h-full bg-[#F8FAFC] border-none rounded-xl pl-12 pr-4 text-xs font-bold focus:ring-4 focus:ring-primary/5 transition-all outline-none"
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
           />
@@ -486,10 +500,16 @@ export default function StudentManagement({ noLayout = false }) {
                   </tr>
                 ))}
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <motion.tbody 
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="divide-y divide-slate-50"
+              >
                 {table.getRowModel().rows.map(row => (
-                  <tr
+                  <motion.tr
                     key={row.id}
+                    variants={tableRowVariants}
                     onClick={() => setSelectedStudent(row.original)}
                     className={`group transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
                   >
@@ -498,9 +518,9 @@ export default function StudentManagement({ noLayout = false }) {
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           )}
         </div>

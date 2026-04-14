@@ -10,7 +10,6 @@ import {
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearch } from "../../context/SearchContext";
-
 import { useAdminData } from "../../context/AdminDataContext";
 
 const ENROLLMENT_CATEGORIES = [
@@ -105,7 +104,6 @@ const FacultyModal = ({ isOpen, onClose, faculty, onSave }) => {
   }, [faculty, isOpen]);
 
   if (!isOpen || !faculty) return null;
-
   const handleImageClick = () => fileInputRef.current?.click();
 
   const handleImageChange = (e) => {

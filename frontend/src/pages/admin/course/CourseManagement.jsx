@@ -11,8 +11,9 @@ import {
 
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
+import { cardVariants, buttonVariants, staggerContainer, tableRowVariants } from "../../../utils/motion";
 
-export default function CourseManagement({ noLayout = false }) {
+export default function CourseManagement({ noLayout = false, hideStats = false }) {
   const { students, courses, setCourses } = useAdminData();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -197,37 +198,48 @@ export default function CourseManagement({ noLayout = false }) {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Course Management</h2>
-          <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p>
+          <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Manage academic programs and faculty assignments</h2>
+
         </div>
       </div>
 
-      {/* Stats Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-[24px] md:rounded-[28px] border border-slate-200 shadow-sm transition-all hover:shadow-lg hover:shadow-black/5">
-            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-4 md:mb-5 shrink-0`}>
-              <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
-            </div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-            <h4 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
-          </div>
-        ))}
-      </div>
+      {/* Stats Section - Conditionally Hidden */}
+      {!hideStats && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={i}
+              variants={cardVariants}
+              whileHover="hover"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white p-6 rounded-[24px] md:rounded-[28px] border border-slate-200 shadow-sm transition-all group cursor-default"
+            >
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-4 md:mb-5 shrink-0 group-hover:scale-110 transition-transform`}>
+                <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+              <h4 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       {/* Filters bar */}
       <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 flex flex-wrap gap-4 items-end shadow-sm">
         <div className="flex-grow min-w-[200px] sm:min-w-[300px]">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Search Courses</label>
-          <div className="relative">
-            <input
+          <div className="relative group">
+            <motion.input
+              whileFocus={{ scale: 1.01 }}
               type="text"
               placeholder="ID or Course Name..."
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="w-full h-11 bg-slate-50 border-none rounded-xl pl-10 pr-4 text-xs font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+              className="w-full h-11 bg-slate-50 border-none rounded-xl pl-10 pr-4 text-xs font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all"
             />
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
           </div>
         </div>
 
@@ -267,10 +279,16 @@ export default function CourseManagement({ noLayout = false }) {
                   </tr>
                 ))}
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <motion.tbody
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="divide-y divide-slate-50"
+              >
                 {currentCoursesRows.map((row) => (
-                  <tr
+                  <motion.tr
                     key={row.id}
+                    variants={tableRowVariants}
                     onClick={() => setSelectedCourse(row.original)}
                     className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedCourse?.id === row.original.id ? 'bg-primary/5' : ''}`}
                   >
@@ -279,9 +297,9 @@ export default function CourseManagement({ noLayout = false }) {
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           )}
         </div>

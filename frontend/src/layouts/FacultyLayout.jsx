@@ -1,6 +1,8 @@
 import { useLocation } from "react-router-dom";
 import Sidebar from "../components/common/Sidebar";
 import Header from "../components/common/Header";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeInUp } from "../utils/motion";
 
 export default function FacultyLayout({ children }) {
   const location = useLocation();
@@ -23,7 +25,17 @@ export default function FacultyLayout({ children }) {
         <Header title={headerInfo.title} sub={headerInfo.sub} />
         <main className="flex-1 bg-white">
           <div className="p-10 max-w-[1600px] mx-auto">
-            {children}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={fadeInUp}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>

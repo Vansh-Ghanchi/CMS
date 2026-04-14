@@ -4,7 +4,7 @@ import CourseManagement from "../../admin/course/CourseManagement";
 export default function FacultyCoursePage() {
   return (
     <div className="animate-in fade-in duration-500">
-      <CourseManagement noLayout={true} />
+      <CourseManagement noLayout={true} hideStats={true} />
     </div>
   );
 }

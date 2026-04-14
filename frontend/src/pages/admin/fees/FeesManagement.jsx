@@ -11,8 +11,9 @@ import {
 
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
+import { cardVariants, buttonVariants, staggerContainer, tableRowVariants } from "../../../utils/motion";
 
-export default function FeesManagement({ noLayout = false }) {
+export default function FeesManagement({ noLayout = false, hideStats = false }) {
   const { fees: students, setFees: setStudents } = useAdminData();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -26,7 +27,7 @@ export default function FeesManagement({ noLayout = false }) {
   const itemsPerPage = 8;
   const [isLoading, setIsLoading] = useState(false);
   const isInitialMount = useRef(true);
-
+  const detailRef = useRef(null);
   const handleReset = () => {
     setIsLoading(true);
     setFilters({
@@ -41,7 +42,14 @@ export default function FeesManagement({ noLayout = false }) {
       setIsLoading(false);
     }, 1700);
   };
-
+  useEffect(() => {
+    if (selectedStudent && detailRef.current) {
+      detailRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }, [selectedStudent]);
   // Trigger loading on any relevant filter change
   useEffect(() => {
     if (isInitialMount.current) {
@@ -58,18 +66,27 @@ export default function FeesManagement({ noLayout = false }) {
   }, [filters.search, filters.institute, filters.course, filters.status]);
 
   const filteredStudents = useMemo(() => {
-    if (!filters.institute || !filters.course) return [];
+    return students.filter(student => {
 
-    return students.filter(s => {
-      const matchesSearch = s.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        s.id.toLowerCase().includes(filters.search.toLowerCase());
-      const matchesStatus = filters.status === "All Status" || s.status === filters.status;
-      const matchesInstitute = s.institute === filters.institute;
-      const matchesCourse = s.course === filters.course;
-      return matchesSearch && matchesStatus && matchesInstitute && matchesCourse;
+      // 🔍 SEARCH
+      const matchesSearch =
+        !filters.search ||
+        student.id.toLowerCase().includes(filters.search.toLowerCase()) ||
+        student.name.toLowerCase().includes(filters.search.toLowerCase());
+
+      // 🎯 FILTERS
+      const matchesInstitute =
+        !filters.institute || student.institute === filters.institute;
+
+      const matchesCourse =
+        !filters.course || student.course === filters.course;
+
+      const matchesStatus =
+        filters.status === "All Status" || student.status === filters.status;
+
+      return matchesSearch && matchesInstitute && matchesCourse && matchesStatus;
     });
   }, [students, filters]);
-
   // Main Table Columns
   const mainColumns = useMemo(() => [
     {
@@ -120,7 +137,7 @@ export default function FeesManagement({ noLayout = false }) {
         return (
           <div className="text-center">
             <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest ${status === 'Paid' ? 'bg-emerald-50 text-emerald-600' :
-                status === 'Pending' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
+              status === 'Pending' ? 'bg-amber-50 text-amber-600' : 'bg-rose-50 text-rose-600'
               }`}>
               {status}
             </span>
@@ -199,36 +216,48 @@ export default function FeesManagement({ noLayout = false }) {
   const content = (
     <div className="flex flex-col gap-8">
       <div>
-        <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Fees Management</h2>
-        <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Track student payments and financial records</p>
+        <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Track student payments and financial records</h2>
+        {/* <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Track student payments and financial records</p> */}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
-        {stats.map((stat, i) => (
-          <div key={i} className="bg-white p-6 rounded-[24px] md:rounded-[28px] border border-slate-200 shadow-sm flex flex-col justify-between transition-all hover:shadow-lg hover:shadow-black/5">
-            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-4 md:mb-5 shrink-0`}>
-              <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
-              <h4 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
-            </div>
-          </div>
-        ))}
-      </div>
+      {/* Stats Section - Conditionally Hidden */}
+      {!hideStats && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+          {stats.map((stat, i) => (
+            <motion.div 
+              key={i}
+              variants={cardVariants}
+              whileHover="hover"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="bg-white p-6 rounded-[24px] md:rounded-[28px] border border-slate-200 shadow-sm flex flex-col justify-between transition-all group cursor-default"
+            >
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-2xl ${stat.color} flex items-center justify-center mb-4 md:mb-5 shrink-0 group-hover:scale-110 transition-transform`}>
+                <stat.icon className="w-5 h-5 md:w-6 md:h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{stat.label}</p>
+                <h4 className="text-2xl md:text-3xl font-black text-[#1E293B] tracking-tighter">{stat.val}</h4>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
 
       <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 shadow-sm flex flex-wrap gap-4 items-end text-slate-200">
         <div className="flex-grow min-w-[200px] sm:min-w-[300px]">
           <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block ml-1">Search Students</label>
-          <div className="relative">
-            <input
+          <div className="relative group">
+            <motion.input
+              whileFocus={{ scale: 1.01 }}
               type="text"
               placeholder="Name or Student ID..."
               value={filters.search}
               onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-              className="w-full h-11 bg-slate-50 border-none rounded-xl pl-10 pr-4 text-xs font-black text-black placeholder:text-black placeholder:font-black outline-none focus:ring-2 focus:ring-primary/20 transition-all font-bold"
+              className="w-full h-11 bg-slate-50 border-none rounded-xl pl-10 pr-4 text-xs font-black text-black placeholder:text-black placeholder:font-black outline-none focus:ring-4 focus:ring-primary/5 transition-all font-bold"
             />
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
           </div>
         </div>
 
@@ -296,17 +325,27 @@ export default function FeesManagement({ noLayout = false }) {
                   </tr>
                 ))}
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <motion.tbody 
+                variants={staggerContainer}
+                initial="hidden"
+                animate="visible"
+                className="divide-y divide-slate-50"
+              >
                 {currentRows.map((row) => (
-                  <tr key={row.id} onClick={() => setSelectedStudent(row.original)} className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}>
+                  <motion.tr 
+                    key={row.id} 
+                    variants={tableRowVariants}
+                    onClick={() => setSelectedStudent(row.original)} 
+                    className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
+                  >
                     {row.getVisibleCells().map(cell => (
                       <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           )}
         </div>
@@ -329,18 +368,29 @@ export default function FeesManagement({ noLayout = false }) {
 
       <AnimatePresence mode="wait">
         {selectedStudent && (
-          <motion.div key={selectedStudent.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm p-6 md:p-10 flex flex-col gap-10 md:gap-12 relative overflow-hidden">
+          <motion.div key={selectedStudent.id} ref={detailRef} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm p-6 md:p-10 flex flex-col gap-10 md:gap-12 relative overflow-hidden">
             <button onClick={() => setSelectedStudent(null)} className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:bg-slate-50 rounded-full transition-all text-slate-300">
               <X className="w-5 h-5" />
             </button>
 
             <div className="w-full">
               <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight mb-6 md:mb-8">Detailed Fees Breakdown</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-10 md:mb-12">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-6 md:gap-8 mb-10 md:mb-12">
                 <DetailItem label="Full Name" val={selectedStudent.name} />
                 <DetailItem label="Student ID" val={selectedStudent.id} />
                 <DetailItem label="Course" val={selectedStudent.course} />
-                <DetailItem label="Total Due" val={`₹${selectedStudent.remaining.toLocaleString()}`} color="text-rose-600" />
+
+                {/* ✅ NEW FIELD FROM BACKEND */}
+                <DetailItem
+                  label="Due Date"
+                  val={selectedStudent.dueDate || "N/A"}
+                />
+
+                <DetailItem
+                  label="Total Due"
+                  val={`₹${selectedStudent.remaining.toLocaleString()}`}
+                  color="text-rose-600"
+                />
               </div>
 
               <div className="flex items-center gap-3 mb-6">
