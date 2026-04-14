@@ -604,5 +604,6 @@ const matchesCourse = !courseFilter || s.course === courseFilter;
       />
     </>
   );
+  return <AdminLayout>{content}</AdminLayout>;
 }
 
