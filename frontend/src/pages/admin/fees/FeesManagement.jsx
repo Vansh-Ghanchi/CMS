@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import AdminLayout from "../../../layouts/AdminLayout";
-import { CreditCard, TrendingUp, AlertTriangle, FileText, PieChart, Search, ChevronLeft, ChevronRight, X, History, ArrowUpDown, RotateCcw } from "lucide-react";
+import { TrendingUp, AlertTriangle, FileText, PieChart, Search, ChevronLeft, ChevronRight, X, History, ArrowUpDown, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   flexRender,
@@ -12,8 +12,8 @@ import {
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
-export default function FeesManagement({ noLayout = false }) {
-  const { fees: students, setFees: setStudents } = useAdminData();
+export default function FeesManagement({noLayout = false, hideStats = false }) {
+  const { fees, setFees } = useAdminData();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
@@ -26,7 +26,7 @@ export default function FeesManagement({ noLayout = false }) {
   const itemsPerPage = 8;
   const [isLoading, setIsLoading] = useState(false);
   const isInitialMount = useRef(true);
-
+  const detailRef = useRef(null);
   const handleReset = () => {
     setIsLoading(true);
     setFilters({
@@ -41,7 +41,14 @@ export default function FeesManagement({ noLayout = false }) {
       setIsLoading(false);
     }, 1700);
   };
-
+  useEffect(() => {
+    if (selectedStudent && detailRef.current) {
+      detailRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }, [selectedStudent]);
   // Trigger loading on any relevant filter change
   useEffect(() => {
     if (isInitialMount.current) {
@@ -58,18 +65,27 @@ export default function FeesManagement({ noLayout = false }) {
   }, [filters.search, filters.institute, filters.course, filters.status]);
 
   const filteredStudents = useMemo(() => {
-    if (!filters.institute || !filters.course) return [];
+    return fees.filter(student => {
 
-    return students.filter(s => {
-      const matchesSearch = s.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        s.id.toLowerCase().includes(filters.search.toLowerCase());
-      const matchesStatus = filters.status === "All Status" || s.status === filters.status;
-      const matchesInstitute = s.institute === filters.institute;
-      const matchesCourse = s.course === filters.course;
-      return matchesSearch && matchesStatus && matchesInstitute && matchesCourse;
+      // 🔍 SEARCH
+      const matchesSearch =
+        !filters.search ||
+        student.id.toLowerCase().includes(filters.search.toLowerCase()) ||
+        student.name.toLowerCase().includes(filters.search.toLowerCase());
+
+      // 🎯 FILTERS
+      const matchesInstitute =
+        !filters.institute || student.institute === filters.institute;
+
+      const matchesCourse =
+        !filters.course || student.course === filters.course;
+
+      const matchesStatus =
+        filters.status === "All Status" || student.status === filters.status;
+
+      return matchesSearch && matchesInstitute && matchesCourse && matchesStatus;
     });
-  }, [students, filters]);
-
+  }, [fees, filters]);
   // Main Table Columns
   const mainColumns = useMemo(() => [
     {
@@ -171,8 +187,8 @@ export default function FeesManagement({ noLayout = false }) {
   const currentRows = rows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   const stats = useMemo(() => {
-    const totalCollection = students.reduce((acc, curr) => acc + (curr.paid || 0), 0);
-    const pendingFees = students.reduce((acc, curr) => acc + (curr.remaining || 0), 0);
+    const totalCollection = fees.reduce((acc, curr) => acc + (curr.paid || 0), 0);
+    const pendingFees = fees.reduce((acc, curr) => acc + (curr.remaining || 0), 0);
 
     return [
       {
@@ -190,16 +206,18 @@ export default function FeesManagement({ noLayout = false }) {
         color: "bg-amber-50 text-amber-600"
       },
     ];
-  }, [students]);
+  }, [fees]);
 
-  const courseOptions = [...new Set(students.map(s => s.course))];
+  const courseOptions = [...new Set(fees.map(s => s.course))];
 
-  return (
-    <AdminLayout>
+
+const content = (
+  <>
+   
       <div className="flex flex-col gap-8">
         <div>
-          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Fees Management</h2>
-          <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Track student payments and financial records</p>
+          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Track student payments and financial records</h2>
+        
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
@@ -214,6 +232,7 @@ export default function FeesManagement({ noLayout = false }) {
               </div>
             </div>
             ))}
+            </div>
 
         <div className="bg-white rounded-[24px] border border-[#e2e8f0] p-4 md:p-6 shadow-sm flex flex-col gap-4">
            <div className="flex flex-wrap gap-4 items-end">
@@ -322,7 +341,7 @@ export default function FeesManagement({ noLayout = false }) {
               </span>
               <div className="flex items-center gap-2 order-1 sm:order-2">
                  <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} className="w-9 h-9 md:w-10 md:h-10 border border-[#f1f5f9] rounded-xl flex items-center justify-center text-slate-400 hover:text-[#0284c7] hover:bg-white transition-all"><ChevronLeft className="w-4 h-4" /></button>
-                 {[...Array(totalPages)].map((_, i) => (
+                 {[...Array(Math.min(5, totalPages))].map((_, i) => (
                    <button key={i} onClick={() => setCurrentPage(i + 1)} className={`w-9 h-9 md:w-10 md:h-10 rounded-xl text-[10px] md:text-[11px] font-bold transition-all ${currentPage === i + 1 ? 'bg-[#0284c7] text-white shadow-lg shadow-indigo-500/20' : 'border border-[#f1f5f9] text-slate-400 hover:text-[#0284c7] hover:bg-white'}`}>
                      {i + 1}
                    </button>
@@ -370,9 +389,10 @@ export default function FeesManagement({ noLayout = false }) {
           )}
         </AnimatePresence>
         </div>
-      </div>
-    </AdminLayout>
+
+    </>
   );
+   return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
 
 function SubTable({ data, columns }) {

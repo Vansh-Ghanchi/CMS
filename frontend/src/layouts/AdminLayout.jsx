@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import Sidebar from "../components/common/Sidebar";
 import Header from "../components/common/Header";
 import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { fadeInUp, fadeIn } from "../utils/motion";
 
 export default function AdminLayout({ children }) {
   const location = useLocation();
@@ -33,12 +35,18 @@ export default function AdminLayout({ children }) {
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex font-sans overflow-x-hidden relative">
       {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-[55] lg:hidden backdrop-blur-sm"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            variants={fadeIn}
+            className="fixed inset-0 bg-black/50 z-[55] lg:hidden backdrop-blur-sm"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Sidebar - Mobile Responsive Drawer */}
       <div className={`fixed inset-y-0 left-0 z-[60] lg:static lg:block transform transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
@@ -54,7 +62,17 @@ export default function AdminLayout({ children }) {
         />
         <main className="flex-1 bg-white">
           <div className="p-4 md:p-8 lg:p-10 max-w-[1600px] mx-auto">
-            {children}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={location.pathname}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                variants={fadeInUp}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </main>
       </div>

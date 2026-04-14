@@ -1,109 +1,249 @@
 import React, { useState } from 'react';
 import { useAdminData } from '../../../context/AdminDataContext';
-import { UserPlus, CheckCircle, AlertCircle } from 'lucide-react';
+import { UserPlus, RefreshCcw } from 'lucide-react';
 
 export default function StudentActions() {
-  const { setStudents, courses } = useAdminData();
-  const [formData, setFormData] = useState({
+  const { students, setStudents, courses } = useAdminData();
+
+  const [addData, setAddData] = useState({
+    studentId: '',
     name: '',
     email: '',
     phone: '',
+    address: '',
     course: '',
     status: 'Active'
   });
+
+  const [updateData, setUpdateData] = useState({
+    studentId: '',
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    course: '',
+    status: 'Active'
+  });
+
   const [message, setMessage] = useState('');
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const showMessage = (msg) => {
+    setMessage(msg);
+    setTimeout(() => setMessage(''), 3000);
   };
 
-  const handleSubmit = (e) => {
+  // ================= ADD =================
+  const handleAddSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email || !formData.course) {
-      setMessage('error');
-      return;
+
+    const cleanId = addData.studentId.trim().toUpperCase();
+
+    if (!cleanId || !addData.name || !addData.email || !addData.course) {
+      return showMessage('error');
+    }
+
+    const exists = students.some(
+      s => s.studentId.toLowerCase() === cleanId.toLowerCase()
+    );
+
+    if (exists) {
+      return showMessage('duplicate');
     }
 
     const newStudent = {
-      ...formData,
-      studentId: `STU-${new Date().getFullYear().toString().slice(-2)}-${Date.now().toString().slice(-4)}`,
-      admissionDate: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
-      institute: courses.find(c => c.name === formData.course)?.institute || 'GIT',
+      ...addData,
+      studentId: cleanId,
+      admissionDate: new Date().toLocaleDateString(),
+      institute: courses.find(c => c.name === addData.course)?.institute || 'GIT',
       avatar: `https://i.pravatar.cc/150?u=${Date.now()}`
     };
 
     setStudents(prev => [newStudent, ...prev]);
-    setMessage('success');
-    setFormData({ name: '', email: '', phone: '', course: '', status: 'Active' });
-    
-    setTimeout(() => setMessage(''), 3000);
+    showMessage('added');
+
+    setAddData({
+      studentId: '',
+      name: '',
+      email: '',
+      phone: '',
+      address: '',
+      course: '',
+      status: 'Active'
+    });
+  };
+
+  // ================= FETCH =================
+  const handleFetchStudent = () => {
+    if (!updateData.studentId) return showMessage('no-id');
+
+    const student = students.find(
+      s => s.studentId.toLowerCase() === updateData.studentId.toLowerCase()
+    );
+
+    if (!student) return showMessage('not-found');
+
+    setUpdateData({
+      studentId: student.studentId,
+      name: student.name || '',
+      email: student.email || '',
+      phone: student.phone || '',
+      address: student.address || '',
+      course: student.course || '',
+      status: student.status || 'Active'
+    });
+
+    showMessage('fetched');
+  };
+
+  // ================= UPDATE =================
+  const handleUpdateSubmit = (e) => {
+    e.preventDefault();
+
+    if (!updateData.studentId) return showMessage('no-id');
+
+    setStudents(prev => {
+      const index = prev.findIndex(
+        s => s.studentId.toLowerCase() === updateData.studentId.toLowerCase()
+      );
+
+      if (index === -1) return prev;
+
+      const updated = [...prev];
+      updated[index] = { ...updated[index], ...updateData };
+
+      return updated;
+    });
+
+    showMessage('updated');
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
+
+      {/* HEADER */}
       <div>
-        <h1 className="text-2xl font-black text-[#1E293B] uppercase tracking-tight">Student Actions</h1>
-        <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Execute administrative operations on students</p>
+        <h1 className="text-2xl font-black text-[#1E293B] uppercase tracking-tight">
+          Student Actions
+        </h1>
+        <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+          Manage student registration and updates
+        </p>
       </div>
 
-      <div className="bg-white rounded-[32px] border border-slate-100 p-8 md:p-10 shadow-sm relative overflow-hidden">
+      {/* ADD STUDENT */}
+      <div className="bg-white rounded-[32px] border border-slate-100 p-8 shadow-sm">
+
         <div className="flex items-center gap-3 mb-8">
-           <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
-               <UserPlus className="w-6 h-6" />
-           </div>
-           <h4 className="text-xl font-black text-[#1E293B] uppercase tracking-tight">Register New Student</h4>
+          <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+            <UserPlus className="w-6 h-6" />
+          </div>
+          <h4 className="text-xl font-black uppercase tracking-tight">
+            Register New Student
+          </h4>
         </div>
 
-        {message === 'success' && (
-           <div className="mb-6 p-4 bg-emerald-50 text-emerald-700 rounded-2xl flex items-center gap-3 text-sm font-bold border border-emerald-100">
-              <CheckCircle className="w-5 h-5" /> Student officially registered to the system.
-           </div>
-        )}
-        {message === 'error' && (
-           <div className="mb-6 p-4 bg-rose-50 text-rose-700 rounded-2xl flex items-center gap-3 text-sm font-bold border border-rose-100">
-              <AlertCircle className="w-5 h-5" /> Please fill out all required fields.
-           </div>
-        )}
+        <form onSubmit={handleAddSubmit} className="grid md:grid-cols-2 gap-6">
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Full Name *</label>
-                <input type="text" name="name" value={formData.name} onChange={handleChange} className="w-full h-12 bg-[#F8FAFC] border-none rounded-2xl px-5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="John Doe" />
-             </div>
-             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Email Address *</label>
-                <input type="email" name="email" value={formData.email} onChange={handleChange} className="w-full h-12 bg-[#F8FAFC] border-none rounded-2xl px-5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="john@example.com" />
-             </div>
-             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Phone Number</label>
-                <input type="text" name="phone" value={formData.phone} onChange={handleChange} className="w-full h-12 bg-[#F8FAFC] border-none rounded-2xl px-5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all" placeholder="+91 98765 43210" />
-             </div>
-             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Course Enrollment *</label>
-                <select name="course" value={formData.course} onChange={handleChange} className="w-full h-12 bg-[#F8FAFC] border-none rounded-2xl px-5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all cursor-pointer">
-                   <option value="">Select a course...</option>
-                   {courses?.map(c => (
-                     <option key={c.name} value={c.name}>{c.name}</option>
-                   ))}
-                </select>
-             </div>
-             <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 block">Initial Status</label>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full h-12 bg-[#F8FAFC] border-none rounded-2xl px-5 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all cursor-pointer">
-                   <option value="Active">Active</option>
-                   <option value="Inactive">Inactive</option>
-                </select>
-             </div>
-          </div>
-          
-          <div className="pt-6">
-             <button type="submit" className="px-8 py-3.5 bg-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
-                Append Record to Database
-             </button>
-          </div>
+          <Input
+            label="Student ID"
+            placeholder="Enter student ID (e.g. STU-001)"
+            value={addData.studentId}
+            onChange={v => setAddData({ ...addData, studentId: v.toUpperCase() })}
+          />
+
+          <Input label="Full Name" placeholder="Enter full name" value={addData.name} onChange={v => setAddData({ ...addData, name: v })} />
+          <Input label="Email" placeholder="Enter email address" value={addData.email} onChange={v => setAddData({ ...addData, email: v })} />
+          <Input label="Phone" placeholder="Enter phone number" value={addData.phone} onChange={v => setAddData({ ...addData, phone: v })} />
+          <Input label="Address" placeholder="Enter address" value={addData.address} onChange={v => setAddData({ ...addData, address: v })} />
+
+          <Select label="Course" placeholder="Select course" value={addData.course} onChange={v => setAddData({ ...addData, course: v })} options={courses.map(c => c.name)} />
+          <Select label="Status" placeholder="Select status" value={addData.status} onChange={v => setAddData({ ...addData, status: v })} options={['Active', 'Inactive']} />
+
+          <button className="col-span-2 px-8 py-3.5 bg-indigo-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg">
+            Add Student
+          </button>
         </form>
       </div>
+
+      {/* UPDATE STUDENT */}
+      <div className="bg-white rounded-[32px] border border-slate-100 p-8 shadow-sm">
+
+        <div className="flex items-center gap-3 mb-8">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <RefreshCcw className="w-6 h-6" />
+          </div>
+          <h4 className="text-xl font-black uppercase tracking-tight">
+            Update Student
+          </h4>
+        </div>
+
+        <div className="flex gap-3 mb-6">
+          <input
+            value={updateData.studentId}
+            onChange={(e) => setUpdateData({ ...updateData, studentId: e.target.value.toUpperCase() })}
+            placeholder="Enter Student ID"
+            className="w-full h-12 bg-[#F8FAFC] rounded-2xl px-5 text-sm font-bold"
+          />
+          <button onClick={handleFetchStudent} className="px-6 bg-indigo-600 text-white rounded-2xl font-bold">
+            Fetch
+          </button>
+        </div>
+
+        <form onSubmit={handleUpdateSubmit} className="grid md:grid-cols-2 gap-6">
+
+          <Input label="Name" placeholder="Enter name" value={updateData.name} onChange={v => setUpdateData({ ...updateData, name: v })} />
+          <Input label="Email" placeholder="Enter email" value={updateData.email} onChange={v => setUpdateData({ ...updateData, email: v })} />
+          <Input label="Phone" placeholder="Enter phone" value={updateData.phone} onChange={v => setUpdateData({ ...updateData, phone: v })} />
+          <Input label="Address" placeholder="Enter address" value={updateData.address} onChange={v => setUpdateData({ ...updateData, address: v })} />
+
+          <Select label="Course" placeholder="Select course" value={updateData.course} onChange={v => setUpdateData({ ...updateData, course: v })} options={courses.map(c => c.name)} />
+          <Select label="Status" placeholder="Select status" value={updateData.status} onChange={v => setUpdateData({ ...updateData, status: v })} options={['Active', 'Inactive']} />
+
+          <button className="col-span-2 px-8 py-3.5 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest shadow-lg">
+            Update Student
+          </button>
+        </form>
+      </div>
+
+      {/* MESSAGE */}
+      {message && (
+        <div className="fixed bottom-6 right-6 px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">
+          {message === 'added' && "Student Added ✅"}
+          {message === 'updated' && "Student Updated 🔄"}
+          {message === 'fetched' && "Data Loaded ✅"}
+          {message === 'duplicate' && "Student ID already exists ❌"}
+          {message === 'error' && "Fill required fields ❌"}
+          {message === 'not-found' && "Student not found ❌"}
+          {message === 'no-id' && "Enter Student ID ❌"}
+        </div>
+      )}
     </div>
   );
 }
+
+/* REUSABLE */
+const Input = ({ label, value, onChange, placeholder }) => (
+  <div className="space-y-2">
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</label>
+    <input
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full h-12 bg-[#F8FAFC] rounded-2xl px-5 text-sm font-bold placeholder:text-slate-400"
+    />
+  </div>
+);
+
+const Select = ({ label, value, onChange, options = [], placeholder }) => (
+  <div className="space-y-2">
+    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</label>
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full h-12 bg-[#F8FAFC] rounded-2xl px-5 text-sm font-bold text-slate-700"
+    >
+      <option value="">{placeholder}</option>
+      {options.map(o => <option key={o}>{o}</option>)}
+    </select>
+  </div>
+);

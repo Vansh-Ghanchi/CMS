@@ -8,11 +8,10 @@ import {
   useReactTable,
   getSortedRowModel,
 } from "@tanstack/react-table";
-
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
-export default function CourseManagement({ noLayout = false }) {
+export default function CourseManagement({noLayout = false, hideStats = false }) {
   const { students, courses, setCourses } = useAdminData();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -194,15 +193,15 @@ export default function CourseManagement({ noLayout = false }) {
 
   const facultyOptions = ["All Faculty", ...new Set(courses.map(c => c.faculty))];
 
-
-  return (
-    <AdminLayout>
+const content = (
+  <>
+   
       <div className="flex flex-col gap-8">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Course Management</h2>
-            <p className="text-[13px] font-medium text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p>
+            <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Manage academic programs and faculty assignments</h2>
+            {/* <p className="text-[13px] font-medium text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p> */}
           </div>
         </div>
 
@@ -297,7 +296,7 @@ export default function CourseManagement({ noLayout = false }) {
              </span>
              <div className="flex items-center gap-2 order-1 sm:order-2">
                 <button onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))} className="w-9 h-9 md:w-10 md:h-10 border border-slate-100 rounded-xl flex items-center justify-center text-slate-400 hover:text-primary hover:bg-white transition-all duration-200 active:scale-95"><ChevronLeft className="w-4 h-4" /></button>
-                {[...Array(totalPages)].map((_, i) => (
+                {[...Array(Math.min(5, totalPages))].map((_, i) => (
                   <button 
                     key={i} 
                     onClick={() => setCurrentPage(i + 1)}
@@ -386,8 +385,9 @@ export default function CourseManagement({ noLayout = false }) {
           )}
         </AnimatePresence>
       </div>
-    </AdminLayout>
+    </>
   );
+    return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 
 }
 

@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import AdminLayout from "../../../layouts/AdminLayout";
-import { Users, Phone, MapPin, X, Search, Filter, ChevronDown, Trash2, Eye, UserCheck, UserPlus, ArrowUpDown, RotateCcw } from "lucide-react";
+import { Users, Phone, MapPin, X, Search,ChevronDown, Trash2, Eye, UserCheck, UserPlus, ArrowUpDown, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSearch } from "../../../context/SearchContext";
 import {
@@ -12,9 +12,17 @@ import {
 
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
+import { cardVariants, buttonVariants, staggerContainer } from "../../../utils/motion";
 
-const StatCardShort = ({ icon: Icon, title, value, subtext, color }) => (
-  <div className="bg-white rounded-[20px] p-6 flex items-center gap-6 border border-slate-200 shadow-sm flex-1">
+const StatCardShort = ({ icon: Icon, title, value, subtext, color, i }) => (
+  <motion.div 
+    variants={cardVariants}
+    whileHover="hover"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: i * 0.1 }}
+    className="bg-white rounded-[20px] p-6 flex items-center gap-6 border border-slate-200 shadow-sm flex-1 cursor-default"
+  >
     <div className={`w-14 h-14 rounded-full ${color} bg-opacity-10 flex items-center justify-center text-primary`}>
       <Icon className={`w-6 h-6 ${color.replace('bg-', 'text-')}`} />
     </div>
@@ -23,7 +31,7 @@ const StatCardShort = ({ icon: Icon, title, value, subtext, color }) => (
        <h3 className="text-2xl font-black text-[#1E293B] tracking-tight">{value}</h3>
        <p className="text-[10px] font-bold text-slate-400 mt-0.5">{subtext}</p>
     </div>
-  </div>
+  </motion.div>
 );
 
 const EditStudentModal = ({ isOpen, onClose, student, onSave }) => {
@@ -172,7 +180,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, studentName }) =>
   );
 };
 
-export default function StudentManagement({ noLayout = false }) {
+export default function StudentManagement({ noLayout = false, hideStats = false }){
   const { searchQuery, setSearchQuery } = useSearch();
   const [localSearch, setLocalSearch] = useState("");
   const { students, setStudents } = useAdminData();
@@ -218,10 +226,6 @@ export default function StudentManagement({ noLayout = false }) {
   }, [students]);
 
   const filteredStudents = useMemo(() => {
-    if (!instituteFilter || !courseFilter) {
-      console.log('Filters incomplete:', { instituteFilter, courseFilter });
-      return [];
-    }
     
     const filtered = students.filter(s => {
       const search = localSearch.toLowerCase();
@@ -230,8 +234,8 @@ export default function StudentManagement({ noLayout = false }) {
                            (s.course?.toLowerCase() || "").includes(search) ||
                            (s.studentId?.toLowerCase() || "").includes(search);
       
-      const matchesInstitute = s.institute === instituteFilter;
-      const matchesCourse = s.course === courseFilter;
+      const matchesInstitute = !instituteFilter || s.institute === instituteFilter;
+const matchesCourse = !courseFilter || s.course === courseFilter;
       const matchesStatus = statusFilter === "All Status" || s.status === statusFilter;
 
       return matchesSearch && matchesInstitute && matchesCourse && matchesStatus;
@@ -309,12 +313,15 @@ export default function StudentManagement({ noLayout = false }) {
       header: () => <div className="text-right">ACTIONS</div>,
       cell: ({ row }) => (
         <div className="flex items-center justify-end">
-          <button
+          <motion.button
+            whileHover="hover"
+            whileTap="tap"
+            variants={buttonVariants}
             onClick={(e) => { e.stopPropagation(); setSelectedStudent(row.original); }}
             className="p-2 hover:bg-white rounded-lg border border-slate-200 shadow-sm transition-all"
           >
             <Eye className="w-3.5 h-3.5 text-primary" />
-          </button>
+          </motion.button>
         </div>
       ),
     },
@@ -486,7 +493,7 @@ export default function StudentManagement({ noLayout = false }) {
                      <tr 
                        key={row.id} 
                        onClick={() => setSelectedStudent(row.original)}
-                       className={`group transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
+                       className={`group transition-all cursor-pointer ${selectedStudent?.studentId === row.original.studentId ? 'bg-primary/5' : 'hover:bg-slate-50'}`}
                      >
                        {row.getVisibleCells().map(cell => (
                          <td key={cell.id} className="py-4 md:py-5 px-6 md:px-8">
@@ -538,7 +545,7 @@ export default function StudentManagement({ noLayout = false }) {
                      </div>
                      <div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Student ID</p>
-                        <h4 className="text-base font-black text-[#1E293B] tracking-tight">{selectedStudent.id}</h4>
+                        <h4 className="text-base font-black text-[#1E293B] tracking-tight">{selectedStudent.studentId}</h4>
                      </div>
                      <div>
                         <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Admission Date</p>
@@ -597,5 +604,6 @@ export default function StudentManagement({ noLayout = false }) {
       />
     </>
   );
+return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
 

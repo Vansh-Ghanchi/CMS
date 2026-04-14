@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useAuth } from "../../context/AuthContext";
+import { scaleIn, buttonVariants, fadeIn } from "../../utils/motion";
 
 export default function ProfileModal({ isOpen, onClose }) {
   const { user, updateUser } = useAuth();
@@ -80,9 +81,10 @@ export default function ProfileModal({ isOpen, onClose }) {
     <AnimatePresence>
       <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md px-6">
         <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          variants={scaleIn}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           className="bg-white rounded-[32px] w-full max-w-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
         >
           {/* Header */}
@@ -109,7 +111,13 @@ export default function ProfileModal({ isOpen, onClose }) {
                      className={`pb-4 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`}
                    >
                       {tab} section
-                      {activeTab === tab && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full" />}
+                      {activeTab === tab && (
+                        <motion.div 
+                          layoutId="tab-active" 
+                          className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full" 
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                        />
+                      )}
                    </button>
                 ))}
              </div>
@@ -148,13 +156,16 @@ export default function ProfileModal({ isOpen, onClose }) {
                             <InputGroup label="Email Address" placeholder="Enter email" value={formData.email} onChange={(v) => setFormData(p => ({ ...p, email: v }))} icon={Mail} type="email" />
                          </div>
 
-                         <button 
+                         <motion.button 
+                           whileHover="hover"
+                           whileTap="tap"
+                           variants={buttonVariants}
                            onClick={handleSaveProfile}
-                           className="w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
+                           className="w-full h-14 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-3"
                          >
                             <Save className="w-4 h-4" />
                             Save Profile Changes
-                         </button>
+                         </motion.button>
                       </motion.div>
                    ) : (
                       <motion.div 
@@ -177,13 +188,16 @@ export default function ProfileModal({ isOpen, onClose }) {
                             </div>
                          </div>
 
-                         <button 
+                         <motion.button 
+                           whileHover="hover"
+                           whileTap="tap"
+                           variants={buttonVariants}
                            onClick={handleSavePassword}
-                           className="w-full bg-slate-50 hover:bg-slate-100 text-[#0f172a] border border-[#e2e8f0] font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
+                           className="w-full h-14 bg-on-surface text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:opacity-90 transition-all flex items-center justify-center gap-3"
                          >
                             <Lock className="w-4 h-4" />
                             Update Security Key
-                         </button>
+                         </motion.button>
                       </motion.div>
                    )}
                 </AnimatePresence>
@@ -214,11 +228,12 @@ export default function ProfileModal({ isOpen, onClose }) {
 
 function InputGroup({ label, placeholder, value, onChange, icon: Icon, type = "text" }) {
   return (
-    <div className="flex flex-col gap-1">
-       <label className="text-[13px] font-medium text-[#475569] ml-1">{label}</label>
+    <div className="space-y-2 group">
+       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1 group-focus-within:text-primary transition-colors">{label}</label>
        <div className="relative">
-          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
-          <input 
+          <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400 group-focus-within:text-primary transition-colors" />
+          <motion.input 
+            whileFocus={{ scale: 1.01 }}
             type={type}
             placeholder={placeholder}
             value={value}
