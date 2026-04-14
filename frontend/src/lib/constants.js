@@ -16,7 +16,8 @@ const generateStudents = () => {
   const lastNames = ["Khan", "Ali", "Fatima", "Ahmed", "Siddiqui", "Hussain", "Noor", "Farooq", "Gupta", "Mehra", "Sharma", "Kapoor", "Iyer", "Singh", "Bose", "Das", "Patel", "Rao", "Menon", "Verma", "Joshi", "Batra", "Malik", "Shah", "Choudhury"];
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  
+  const cities = ["Ahmedabad, Gujarat, India", "Mumbai, Maharashtra, India", "Delhi, India", "Bangalore, Karnataka, India", "Pune, Maharashtra, India", "Jaipur, Rajasthan, India", "Chennai, Tamil Nadu, India", "Hyderabad, Telangana, India"];
+
   let idCounter = 1001;
 
   // Generate for 2025
@@ -24,22 +25,23 @@ const generateStudents = () => {
     // 4-6 students per month to show good distribution
     const count = 4 + Math.floor(Math.random() * 3);
     for (let i = 0; i < count; i++) {
-        const courseObj = courses[(m + i) % courses.length];
-        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-        const day = 1 + Math.floor(Math.random() * 28);
-        
-        students.push({
-            studentId: `STU-25-${idCounter++}`,
-            name: `${firstName} ${lastName}`,
-            email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${idCounter}@email.com`,
-            phone: `+91 98765 ${Math.floor(10000 + Math.random() * 90000)}`,
-            institute: courseObj.inst,
-            course: courseObj.name,
-            admissionDate: `${day} ${monthNames[m]} 2025`,
-            status: Math.random() > 0.1 ? "Active" : "Inactive",
-            avatar: `https://i.pravatar.cc/150?u=${idCounter}`
-        });
+      const courseObj = courses[(m + i) % courses.length];
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const day = 1 + Math.floor(Math.random() * 28);
+
+      students.push({
+        studentId: `STU-25-${idCounter++}`,
+        name: `${firstName} ${lastName}`,
+        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${idCounter}@email.com`,
+        phone: `+91 98765 ${Math.floor(10000 + Math.random() * 90000)}`,
+        institute: courseObj.inst,
+        course: courseObj.name,
+        admissionDate: `${day} ${monthNames[m]} 2025`,
+        address: `${100 + i}, ${cities[(m + i) % cities.length]}`,
+        status: Math.random() > 0.1 ? "Active" : "Inactive",
+        avatar: `https://i.pravatar.cc/150?u=${idCounter}`
+      });
     }
   }
 
@@ -47,22 +49,23 @@ const generateStudents = () => {
   for (let m = 0; m < 4; m++) {
     const count = 5 + Math.floor(Math.random() * 2);
     for (let i = 0; i < count; i++) {
-        const courseObj = courses[(m + i) % courses.length];
-        const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
-        const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
-        const day = 1 + Math.floor(Math.random() * 28);
+      const courseObj = courses[(m + i) % courses.length];
+      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
+      const day = 1 + Math.floor(Math.random() * 28);
 
-        students.push({
-            studentId: `STU-26-${idCounter++}`,
-            name: `${firstName} ${lastName}`,
-            email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${idCounter}@email.com`,
-            phone: `+91 98765 ${Math.floor(10000 + Math.random() * 90000)}`,
-            institute: courseObj.inst,
-            course: courseObj.name,
-            admissionDate: `${day} ${monthNames[m]} 2026`,
-            status: "Active",
-            avatar: `https://i.pravatar.cc/150?u=${idCounter}`
-        });
+      students.push({
+        studentId: `STU-26-${idCounter++}`,
+        name: `${firstName} ${lastName}`,
+        email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${idCounter}@email.com`,
+        phone: `+91 98765 ${Math.floor(10000 + Math.random() * 90000)}`,
+        institute: courseObj.inst,
+        course: courseObj.name,
+        admissionDate: `${day} ${monthNames[m]} 2026`,
+        address: `${200 + i}, ${cities[(m + i + 2) % cities.length]}`,
+        status: "Active",
+        avatar: `https://i.pravatar.cc/150?u=${idCounter}`
+      });
     }
   }
 
@@ -80,22 +83,22 @@ export const STUDENT_FEES_DATA = STUDENT_RECORDS_DATA.map(s => {
   // Generate 4-6 sequential monthly payments starting from admission
   const history = [];
   let currentTotal = 0;
-  
+
   for (let i = 0; i < 5; i++) {
     let mIdx = (startMonthIndex + i) % 12;
     let y = startYear + Math.floor((startMonthIndex + i) / 12);
-    
+
     // Don't go past April 2026
     if (y > 2026 || (y === 2026 && mIdx > 3)) break;
 
     const amount = 5000 + Math.floor(Math.random() * 2000);
     currentTotal += amount;
-    
+
     history.push({
-        date: `${10 + i} ${monthNamesShort[mIdx]} ${y}`,
-        amount,
-        method: i % 2 === 0 ? "UPI" : "Bank Transfer",
-        status: "Success"
+      date: `${10 + i} ${monthNamesShort[mIdx]} ${y}`,
+      amount,
+      method: i % 2 === 0 ? "UPI" : "Bank Transfer",
+      status: "Success"
     });
   }
 
@@ -125,7 +128,7 @@ export const getEnrollmentDistribution = (year, monthIndex) => {
   const targetMonth = monthNamesShort[monthIndex];
 
   // Filter students by admission month/year
-  const filtered = STUDENT_RECORDS_DATA.filter(s => 
+  const filtered = STUDENT_RECORDS_DATA.filter(s =>
     s.admissionDate.includes(targetMonth) && s.admissionDate.includes(targetYear)
   );
 
@@ -144,7 +147,7 @@ export const getEnrollmentDistribution = (year, monthIndex) => {
 
 export const getMonthlyFeeTrends = () => {
   const months = [
-    "JAN 25", "FEB 25", "MAR 25", "APR 25", "MAY 25", "JUN 25", 
+    "JAN 25", "FEB 25", "MAR 25", "APR 25", "MAY 25", "JUN 25",
     "JUL 25", "AUG 25", "SEP 25", "OCT 25", "NOV 25", "DEC 25",
     "JAN 26", "FEB 26", "MAR 26", "APR 26"
   ];
@@ -152,10 +155,10 @@ export const getMonthlyFeeTrends = () => {
   return months.map((month, index) => {
     const year = month.includes('25') ? '2025' : '2026';
     const monthName = month.split(' ')[0];
-    
+
     // Sum all transactions from all students for this month
     const actualCollection = STUDENT_FEES_DATA.reduce((total, student) => {
-      const monthTransactions = student.history.filter(h => 
+      const monthTransactions = student.history.filter(h =>
         h.date.includes(monthName) && h.date.includes(year)
       );
       return total + monthTransactions.reduce((sum, t) => sum + t.amount, 0);
@@ -180,23 +183,23 @@ export const INITIAL_COURSES = [
 ];
 
 export const generateAttendanceLogs = (students) => {
-    const logs = [];
-    // Last 5 days for history
-    const dates = ["2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11", "2026-04-12"];
-    
-    dates.forEach(date => {
-        students.forEach((student, index) => {
-            // Predictable generation: ~90% attendance
-            const isAbsent = (index % 10 === 0);
-            
-            logs.push({
-                date,
-                studentId: student.studentId,
-                status: isAbsent ? "Absent" : "Present",
-                checkIn: isAbsent ? "-" : "09:00 AM",
-                remarks: isAbsent ? "Not Reported" : "-"
-            });
-        });
+  const logs = [];
+  // Last 5 days for history
+  const dates = ["2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11", "2026-04-12"];
+
+  dates.forEach(date => {
+    students.forEach((student, index) => {
+      // Predictable generation: ~90% attendance
+      const isAbsent = (index % 10 === 0);
+
+      logs.push({
+        date,
+        studentId: student.studentId,
+        status: isAbsent ? "Absent" : "Present",
+        checkIn: isAbsent ? "-" : "09:00 AM",
+        remarks: isAbsent ? "Not Reported" : "-"
+      });
     });
-    return logs;
+  });
+  return logs;
 };

@@ -6,40 +6,40 @@ const AdminDataContext = createContext();
 export const AdminDataProvider = ({ children }) => {
   // Initialize from LocalStorage if available, otherwise use Constants
   const [students, setStudents] = useState(() => {
-    const saved = localStorage.getItem('admin_master_students_v2');
+    const saved = localStorage.getItem('admin_master_students_v3');
     return saved ? JSON.parse(saved) : STUDENT_RECORDS_DATA;
   });
 
   const [fees, setFees] = useState(() => {
-    const saved = localStorage.getItem('admin_master_fees_v2');
+    const saved = localStorage.getItem('admin_master_fees_v3');
     return saved ? JSON.parse(saved) : STUDENT_FEES_DATA;
   });
 
   const [courses, setCourses] = useState(() => {
-    const saved = localStorage.getItem('admin_master_courses_v4');
+    const saved = localStorage.getItem('admin_master_courses_v5');
     return saved ? JSON.parse(saved) : INITIAL_COURSES;
   });
 
   const [attendanceLogs, setAttendanceLogs] = useState(() => {
-    const saved = localStorage.getItem('admin_master_attendance_v2');
+    const saved = localStorage.getItem('admin_master_attendance_v3');
     return saved ? JSON.parse(saved) : generateAttendanceLogs(students);
   });
 
   // Persist changes
   useEffect(() => {
-    localStorage.setItem('admin_master_students_v2', JSON.stringify(students));
+    localStorage.setItem('admin_master_students_v3', JSON.stringify(students));
   }, [students]);
 
   useEffect(() => {
-    localStorage.setItem('admin_master_fees_v2', JSON.stringify(fees));
+    localStorage.setItem('admin_master_fees_v3', JSON.stringify(fees));
   }, [fees]);
 
   useEffect(() => {
-    localStorage.setItem('admin_master_courses_v4', JSON.stringify(courses));
+    localStorage.setItem('admin_master_courses_v5', JSON.stringify(courses));
   }, [courses]);
 
   useEffect(() => {
-    localStorage.setItem('admin_master_attendance_v2', JSON.stringify(attendanceLogs));
+    localStorage.setItem('admin_master_attendance_v3', JSON.stringify(attendanceLogs));
   }, [attendanceLogs]);
 
   // Dynamic Chart Helpers using current state

@@ -90,7 +90,7 @@ export default function ProfileModal({ isOpen, onClose }) {
           {/* Header */}
           <div className="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center shrink-0">
             <div>
-               <h3 className="text-xl font-black text-[#1E293B] tracking-tight">Admin Settings</h3>
+               <h3 className="text-xl font-bold text-[#1E293B] tracking-tight">Admin Settings</h3>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Configure your portal credentials</p>
             </div>
             <button 
@@ -108,7 +108,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                    <button 
                      key={tab}
                      onClick={() => setActiveTab(tab)}
-                     className={`pb-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`}
+                     className={`pb-4 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`}
                    >
                       {tab} section
                       {activeTab === tab && (
@@ -146,7 +146,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                                <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                             </div>
                             <div className="flex flex-col">
-                               <h4 className="text-lg font-black text-[#1E293B] tracking-tight">Identity & Vision</h4>
+                               <h4 className="text-xl font-bold text-[#1E293B] tracking-tight">Identity & Vision</h4>
                                <p className="text-xs font-bold text-slate-500 leading-relaxed max-w-[200px]">Update your public profile information across the system.</p>
                             </div>
                          </div>
@@ -238,7 +238,7 @@ function InputGroup({ label, placeholder, value, onChange, icon: Icon, type = "t
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-slate-50 border-none rounded-2xl h-12 pl-12 pr-4 text-xs font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all text-[#1E293B]"
+            className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all text-[#1E293B] placeholder:text-[#94a3b8]"
           />
        </div>
     </div>
