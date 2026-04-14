@@ -72,7 +72,7 @@ export default function LoginPage() {
 
   if (loginSuccess) {
     return (
-      <div className="min-h-screen bg-[#F8F9FF] flex items-center justify-center p-8 relative overflow-hidden font-mono">
+      <div className="h-screen bg-[#F8F9FF] flex items-center justify-center p-8 relative overflow-hidden font-mono">
         {/* Background Decor */}
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden select-none">
           <div className="absolute -top-48 -left-48 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
@@ -90,7 +90,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8F9FF] flex flex-col items-center justify-center py-6 px-4 relative overflow-hidden font-sans">
+    <div className="fixed inset-0 bg-[#F8F9FF] flex flex-col items-center justify-center py-6 px-4 overflow-hidden font-sans">
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden select-none">
         <div className="absolute -top-48 -left-48 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]" />
@@ -122,9 +122,9 @@ export default function LoginPage() {
           <p className="text-secondary text-xs font-medium leading-relaxed opacity-60">Enter your credentials to manage your campus portfolio.</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
-          <div className="space-y-3">
-             <label className="text-[9px] font-black text-secondary/60 uppercase tracking-widest ml-1">Account Role</label>
+        <form onSubmit={handleLogin} className="space-y-5">
+           <div className="flex flex-col gap-1">
+              <label className="text-[13px] font-medium text-[#475569] ml-1">Account Role</label>
              <div className="grid grid-cols-2 bg-[#F1F3F9] p-1.5 rounded-[16px] relative">
                 <motion.div 
                   layoutId="roleActive"
@@ -152,30 +152,30 @@ export default function LoginPage() {
              </div>
           </div>
 
-          <div className="space-y-2.5">
-             <label className="text-[9px] font-black text-secondary/60 uppercase tracking-widest ml-1">Email Address</label>
+           <div className="flex flex-col gap-1">
+              <label className="text-[13px] font-medium text-[#475569] ml-1">Email Address</label>
              <div className="relative group">
-                <User className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline transition-colors group-focus-within:text-primary" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline transition-colors group-focus-within:text-primary" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@institution.edu"
-                  className="w-full bg-[#F1F3F9] border-none rounded-[18px] py-4 pl-12 pr-5 text-[11px] font-bold focus:ring-4 focus:ring-primary/10 outline-none"
+                  className="w-full bg-[#f8fafc] border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] outline-none placeholder:text-[#94a3b8] transition-all"
                 />
              </div>
           </div>
 
-          <div className="space-y-2.5">
-             <div className="flex justify-between items-end">
-               <label className="text-[9px] font-black text-secondary/60 uppercase tracking-widest ml-1">Password</label>
+           <div className="flex flex-col gap-1">
+              <div className="flex justify-between items-end mb-1">
+                <label className="text-[13px] font-medium text-[#475569] ml-1">Password</label>
                {activeRole === 'admin' && (
                   <button type="button" className="text-[9px] font-black text-primary uppercase tracking-widest hover:underline decoration-1">Forgot?</button>
                )}
              </div>
              <div className="relative group">
-                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-outline transition-colors group-focus-within:text-primary" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline transition-colors group-focus-within:text-primary" />
                 <input
                   type="password"
                   autoComplete="current-password"
@@ -183,7 +183,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-[#F1F3F9] border-none rounded-[18px] py-4 pl-12 pr-5 text-[11px] font-bold focus:ring-4 focus:ring-primary/10 outline-none"
+                  className="w-full bg-[#f8fafc] border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] outline-none placeholder:text-[#94a3b8] transition-all"
                 />
              </div>
           </div>
@@ -200,10 +200,10 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full editorial-gradient text-white py-4 px-6 rounded-[18px] text-[10px] font-black uppercase tracking-[0.25em] flex items-center justify-center gap-2 shadow-xl shadow-primary/25 mt-4 ${loading ? 'opacity-70' : ''}`}
+            className={`w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-primary/25 mt-4 ${loading ? 'opacity-70' : ''}`}
           >
             {loading ? "Verifying..." : "Login to Portal"}
-            {!loading && <ArrowRight className="w-3.5 h-3.5" />}
+            {!loading && <ArrowRight className="w-4 h-4" />}
           </button>
         </form>
       </motion.div>

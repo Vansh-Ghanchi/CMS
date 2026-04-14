@@ -36,14 +36,13 @@ const InfinityLoader = forwardRef((props, ref) => {
         className="drop-shadow-[0_0_12px_rgba(0,0,0,0.1)]"
         aria-hidden="true"
       >
-        {/* Background shapes - Faint and muted */}
-        <g fill="none" strokeWidth={3.5} strokeLinecap="round" strokeJoin="round" className="stroke-slate-200">
+        <g fill="none" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" className="stroke-slate-200">
           <path pathLength={100} d={G_PATH} />
           <path pathLength={100} d={U_PATH} />
         </g>
 
         {/* Animated strokes - Tracing simultaneously */}
-        <g fill="none" strokeWidth={3.5} strokeLinecap="round" strokeJoin="round" className="stroke-primary">
+        <g fill="none" strokeWidth={3.5} strokeLinecap="round" strokeLinejoin="round" className="stroke-primary">
           <path 
             pathLength={100} 
             strokeDasharray="30 70"

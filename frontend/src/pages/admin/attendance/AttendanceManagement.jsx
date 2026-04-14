@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import AdminLayout from "../../../layouts/AdminLayout";
-import { CheckCircle, Clock, Calendar, AlertCircle, Mail, User, ShieldCheck, Download, Filter as FilterIcon, Search, RotateCcw, ChevronLeft, ChevronRight, MoreHorizontal, X, ArrowUpDown } from "lucide-react";
+import { CheckCircle, Calendar, AlertCircle, User, Download, Search, RotateCcw, ChevronLeft, ChevronRight, MoreHorizontal, X, ArrowUpDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   flexRender,
@@ -132,17 +132,17 @@ export default function AttendanceManagement() {
           <ArrowUpDown className="w-3 h-3" />
         </div>
       ),
-      cell: ({ row }) => <span className="text-[11px] font-black text-slate-400 uppercase tracking-[0.1em]">{row.getValue("studentId")}</span>,
+      cell: ({ row }) => <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{row.getValue("studentId")}</span>,
     },
     {
       accessorKey: "name",
       header: "NAME",
       cell: ({ row }) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white shadow-sm shrink-0">
+          <div className="w-9 h-9 rounded-full overflow-hidden border-none bg-slate-100 shadow-sm shrink-0">
             <img src={row.original.avatar} alt={row.getValue("name")} className="w-full h-full object-cover" />
           </div>
-          <span className="text-sm font-black text-[#1E293B] tracking-tight whitespace-nowrap">{row.getValue("name")}</span>
+           <span className="text-[14px] font-bold text-[#0f172a] tracking-tight whitespace-nowrap">{row.getValue("name")}</span>
         </div>
       ),
     },
@@ -152,7 +152,7 @@ export default function AttendanceManagement() {
       cell: ({ row }) => {
         const status = row.getValue("status");
         return (
-          <span className={`flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest w-max ${
+           <span className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-[9px] font-bold uppercase tracking-[0.3em] w-max ${
             status === 'Present' ? 'bg-emerald-50 text-emerald-600' : 
             status === 'Absent' ? 'bg-rose-50 text-rose-600' : 'bg-slate-50 text-slate-400'
           }`}>
@@ -168,12 +168,12 @@ export default function AttendanceManagement() {
     {
       accessorKey: "phone",
       header: "PHONE",
-      cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("phone")}</span>,
+       cell: ({ row }) => <span className="text-[13px] font-medium text-slate-500 whitespace-nowrap">{row.getValue("phone")}</span>,
     },
     {
       accessorKey: "admissionDate",
       header: "ADMISSION DATE",
-      cell: ({ row }) => <span className="text-xs font-bold text-slate-500 whitespace-nowrap">{row.getValue("admissionDate")}</span>,
+      cell: ({ row }) => <span className="text-xs font-bold text-slate-400 opacity-60 whitespace-nowrap uppercase tracking-tight">{row.getValue("admissionDate")}</span>,
     },
   ], []);
 
@@ -197,9 +197,9 @@ export default function AttendanceManagement() {
     <AdminLayout>
       <div className="flex flex-col gap-8">
         {/* Header */}
-        <div>
-          <h2 className="text-2xl font-black text-[#1E293B] tracking-tight">Attendance Management</h2>
-          <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">Monitor and manage student attendance</p>
+         <div>
+          <h2 className="text-3xl font-bold text-[#0f172a] tracking-tight">Attendance Management</h2>
+          <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Monitor and manage student attendance</p>
         </div>
 
         {/* Dynamic Stats Cards */}
@@ -239,16 +239,16 @@ export default function AttendanceManagement() {
         </div>
 
         {/* Filters Bar */}
-         <div className="bg-white rounded-[24px] border border-slate-200 p-4 md:p-6 flex flex-col gap-4 shadow-sm min-w-0">
+         <div className="bg-white rounded-[24px] border border-[#e2e8f0] p-4 md:p-6 flex flex-col gap-4 shadow-sm min-w-0">
            <div className="flex flex-wrap items-end gap-3 md:gap-4">
-              <div className="flex-1 min-w-[140px]">
-                 <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">Select Date</label>
+              <div className="flex flex-col gap-1 flex-1 min-w-[140px]">
+                 <label className="text-[13px] font-medium text-[#475569] ml-1">Select Date</label>
                  <div className="relative">
                     <input 
                       type="date" 
                       value={filters.date}
                       onChange={(e) => setFilters({ ...filters, date: e.target.value })}
-                      className="w-full h-11 bg-slate-50 border-none rounded-xl px-4 pr-10 text-[11px] font-black text-black focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                      className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pr-10 text-[14px] font-medium text-[#0f172a] focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none" 
                     />
                     <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                  </div>
@@ -292,33 +292,34 @@ export default function AttendanceManagement() {
               />
 
               <div className="flex-[2] min-w-[200px]">
+                 <label className="text-[13px] font-medium text-[#475569] ml-1 mb-1 block">Search</label>
                  <div className="relative">
                     <input 
                       type="text" 
                       placeholder="Search student..." 
                       value={filters.search}
                       onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                      className="w-full h-11 bg-[#F8FAFC] border-none rounded-xl pl-10 pr-4 text-[11px] font-black text-black placeholder:text-black placeholder:font-black focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                      className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
                     />
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                  </div>
               </div>
 
-              <button onClick={handleReset} className="h-11 px-5 bg-slate-50 text-slate-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0">
-                 <RotateCcw className="w-3.5 h-3.5" />
+              <button onClick={handleReset} className="bg-slate-50 text-[#0f172a] border border-[#e2e8f0] rounded-xl px-4 py-2.5 hover:bg-slate-100 transition-all flex items-center justify-center gap-2 shrink-0 w-full sm:w-auto mt-2 sm:mt-0 font-bold text-[12px] active:scale-95">
+                 <RotateCcw className="w-4 h-4" />
                  Reset
               </button>
            </div>
         </div>
 
         {/* Students Table Section */}
-        <div className="bg-white rounded-[24px] md:rounded-[32px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
-           <div className="p-6 md:p-8 border-b border-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-50/10">
-              <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate">
+        <div className="bg-white rounded-[24px] border border-[#e2e8f0] shadow-sm overflow-hidden flex flex-col">
+           <div className="p-6 md:p-8 border-b border-[#f1f5f9] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#f8fafc]">
+              <h3 className="text-lg md:text-xl font-bold text-[#0f172a] tracking-tight truncate">
                 Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
               </h3>
-              <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all w-full sm:w-auto justify-center">
-                 <Download className="w-3.5 h-3.5" />
+              <button className="bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20 w-full sm:w-auto">
+                 <Download className="w-4 h-4" />
                  Export
               </button>
            </div>
@@ -326,33 +327,33 @@ export default function AttendanceManagement() {
             <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
                {isLoading ? (
                   <div className="py-24 flex flex-col items-center justify-center bg-slate-50/5 animate-in fade-in duration-500">
-                     <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-primary [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(79,70,229,0.2)]" />
-                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
-                        <span className="w-8 h-[1px] bg-slate-200"></span>
+                     <InfinityLoader size={80} className="[&>svg>path:last-child]:stroke-[#0284c7] [&>svg>path:last-child]:drop-shadow-[0_0_12px_rgba(2,132,199,0.2)]" />
+                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-8 flex items-center gap-2">
+                        <span className="w-8 h-[1px] bg-[#f1f5f9]"></span>
                         Processing Records
-                        <span className="w-8 h-[1px] bg-slate-200"></span>
+                        <span className="w-8 h-[1px] bg-[#f1f5f9]"></span>
                      </p>
                   </div>
                ) : (
                   <table className="w-full text-left min-w-[900px]">
                      <thead>
                         {table.getHeaderGroups().map(headerGroup => (
-                          <tr key={headerGroup.id} className="bg-slate-50/50">
+                          <tr key={headerGroup.id} className="bg-[#f8fafc]">
                             {headerGroup.headers.map(header => (
-                              <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                              <th key={header.id} className="py-4 md:py-5 px-6 md:px-8 text-[10px] font-bold text-[#94a3b8] uppercase tracking-widest">
                                 {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                               </th>
                             ))}
                           </tr>
                         ))}
                      </thead>
-                     <tbody className="divide-y divide-slate-50">
+                     <tbody className="divide-y divide-[#f1f5f9]">
                         {currentStudentsRows.length > 0 ? (
                           currentStudentsRows.map((row) => (
                             <tr 
                               key={row.id} 
                               onClick={() => setSelectedStudent(row.original)}
-                              className={`group hover:bg-slate-50 transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-primary/5' : ''}`}
+                              className={`group hover:bg-[#f8fafc] transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-[#0284c7]/5' : ''}`}
                             >
                               {row.getVisibleCells().map(cell => (
                                 <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
@@ -379,15 +380,15 @@ export default function AttendanceManagement() {
             </div>
 
            {/* Pagination */}
-           <div className="p-6 border-t border-slate-50 flex flex-col sm:flex-row items-center justify-between gap-6 bg-slate-50/5">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest order-2 sm:order-1 text-center sm:text-left">
+           <div className="p-6 border-t border-[#f1f5f9] flex flex-col sm:flex-row items-center justify-between gap-6 bg-[#f8fafc]">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest order-2 sm:order-1 text-center sm:text-left">
                  Showing {(currentPage - 1) * itemsPerPage + 1} to {Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length} students
               </span>
               <div className="flex items-center gap-2 order-1 sm:order-2">
                  <button 
                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                    disabled={currentPage === 1}
-                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-[#f1f5f9] flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0284c7] transition-all disabled:opacity-30 disabled:hover:bg-transparent"
                  >
                     <ChevronLeft className="w-4 h-4" />
                  </button>
@@ -396,8 +397,8 @@ export default function AttendanceManagement() {
                    <button 
                      key={i + 1}
                      onClick={() => setCurrentPage(i + 1)}
-                     className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all ${
-                       currentPage === i + 1 ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'border border-slate-100 text-slate-400 hover:bg-white hover:text-primary'
+                     className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-bold transition-all ${
+                       currentPage === i + 1 ? 'bg-[#0284c7] text-white shadow-lg shadow-indigo-500/20' : 'border border-[#f1f5f9] text-slate-400 hover:bg-white hover:text-[#0284c7]'
                      }`}
                    >
                      {i + 1}
@@ -411,7 +412,7 @@ export default function AttendanceManagement() {
                      </div>
                      <button 
                        onClick={() => setCurrentPage(totalPages)}
-                       className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-black transition-all border border-slate-100 text-slate-400 hover:bg-white hover:text-primary ${currentPage === totalPages ? 'bg-primary text-white shadow-lg shadow-primary/20' : ''}`}
+                       className={`w-9 h-9 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[10px] md:text-[11px] font-bold transition-all border border-[#f1f5f9] text-slate-400 hover:bg-white hover:text-[#0284c7] ${currentPage === totalPages ? 'bg-[#0284c7] text-white shadow-lg shadow-indigo-500/20' : ''}`}
                      >
                        {totalPages}
                      </button>
@@ -421,7 +422,7 @@ export default function AttendanceManagement() {
                  <button 
                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                    disabled={currentPage === totalPages}
-                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-slate-100 flex items-center justify-center text-slate-400 hover:bg-white hover:text-primary transition-all disabled:opacity-30 disabled:hover:bg-transparent"
+                   className="w-9 h-9 md:w-10 md:h-10 rounded-xl border border-[#f1f5f9] flex items-center justify-center text-slate-400 hover:bg-white hover:text-[#0284c7] transition-all disabled:opacity-30 disabled:hover:bg-transparent"
                  >
                     <ChevronRight className="w-4 h-4" />
                  </button>
@@ -444,9 +445,9 @@ export default function AttendanceManagement() {
 // Subcomponents
 function StatCard({ label, val, sub, icon: Icon, color, i }) {
   const colors = {
-    blue: "bg-blue-50 text-blue-600",
+    blue: "bg-indigo-50 text-[#0284c7]",
     emerald: "bg-emerald-50 text-emerald-600",
-    indigo: "bg-indigo-50 text-indigo-600",
+    indigo: "bg-[#f1f5f9] text-[#0284c7]",
     rose: "bg-rose-50 text-rose-600"
   };
 
@@ -455,32 +456,32 @@ function StatCard({ label, val, sub, icon: Icon, color, i }) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.1 }}
-      className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm hover:shadow-md transition-all group"
+      className="bg-white p-8 rounded-[24px] border border-[#f1f5f9] shadow-sm hover:shadow-lg transition-all group"
     >
        <div className="flex items-start justify-between mb-8">
           <div className={`p-4 rounded-2xl ${colors[color]} group-hover:scale-110 transition-transform`}>
              <Icon className="w-6 h-6" />
           </div>
        </div>
-       <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">{label}</p>
+       <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">{label}</p>
        <div className="flex items-baseline gap-3">
-          <h4 className="text-3xl font-black text-[#1E293B] tracking-tighter">{val}</h4>
-          <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{sub}</span>
+          <h4 className="text-3xl font-bold text-[#0f172a] tracking-tighter">{val}</h4>
+          <span className="text-[10px] font-bold text-slate-400 opacity-60 uppercase tracking-widest">{sub}</span>
        </div>
     </motion.div>
   );
 }
 
-function DropdownFilter({ label, val, setVal, options, className, disabled, placeholder }) {
+function DropdownFilter({ label, val, setVal, options, placeholder, disabled, className }) {
   return (
-    <div className={className}>
-       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 block ml-1">{label}</label>
+    <div className={`flex flex-col gap-1 ${className || 'flex-1'} ${disabled ? 'opacity-50 pointer-events-none' : ''}`}>
+       <label className="text-[13px] font-medium text-[#475569] ml-1">{label}</label>
        <div className="relative">
           <select 
             value={val}
             onChange={(e) => setVal(e.target.value)}
             disabled={disabled}
-            className={`w-full h-11 bg-slate-50 border-none rounded-xl px-4 text-[11px] font-black text-black appearance-none focus:ring-2 focus:ring-primary/20 transition-all outline-none pr-10 ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 text-[14px] font-medium text-[#0f172a] appearance-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none pr-10 ${disabled ? 'opacity-50 cursor-not-allowed border-none bg-slate-50' : ''}`}
           >
              {placeholder && <option value="" hidden>{placeholder}</option>}
              {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
@@ -542,7 +543,7 @@ function StudentModal({ isOpen, student, onClose }) {
 
   const modalContent = (
     <AnimatePresence>
-      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md px-6">
+      <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-[#0f172a]/40 backdrop-blur-sm px-6">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -560,25 +561,25 @@ function StudentModal({ isOpen, student, onClose }) {
             <img src={student.avatar} alt={student.name} className="w-full h-full object-cover" />
           </div>
 
-          <h3 className="text-base font-black text-[#1E293B] tracking-tight">{student.name}</h3>
-          <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1 mb-8">{student.studentId}</p>
+          <h3 className="text-xl font-bold text-[#0f172a] tracking-tight">{student.name}</h3>
+          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-8">{student.studentId}</p>
 
           {/* Attendance Calendar */}
-          <div className="w-full bg-slate-50 rounded-[32px] p-6 border border-slate-100">
+          <div className="w-full bg-[#f8fafc] rounded-[32px] p-6 border border-[#f1f5f9]">
              <div className="flex justify-between items-center mb-6">
-                <h4 className="text-[10px] font-black text-[#1E293B] uppercase tracking-widest">{monthNames[viewMonth]} {viewYear}</h4>
+                <h4 className="text-[10px] font-bold text-[#0f172a] uppercase tracking-widest">{monthNames[viewMonth]} {viewYear}</h4>
                 <div className="flex gap-2">
                    <button 
                      onClick={prevMonth} 
                      disabled={viewYear === 2025 && viewMonth === 0}
-                     className="p-1.5 bg-white border border-slate-100 rounded-lg text-slate-400 hover:text-primary transition-colors disabled:opacity-20"
+                     className="p-1.5 bg-white border border-[#f1f5f9] rounded-lg text-slate-400 hover:text-[#0284c7] transition-colors disabled:opacity-20"
                    >
                      <ChevronLeft className="w-3 h-3" />
                    </button>
                    <button 
                      onClick={nextMonth} 
                      disabled={viewYear === 2026 && viewMonth === 3}
-                     className="p-1.5 bg-white border border-slate-100 rounded-lg text-slate-400 hover:text-primary transition-colors disabled:opacity-20"
+                     className="p-1.5 bg-white border border-[#f1f5f9] rounded-lg text-slate-400 hover:text-[#0284c7] transition-colors disabled:opacity-20"
                    >
                      <ChevronRight className="w-3 h-3" />
                    </button>
@@ -587,7 +588,7 @@ function StudentModal({ isOpen, student, onClose }) {
              
              <div className="grid grid-cols-7 gap-2 mb-2">
                 {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((d, i) => (
-                    <div key={i} className="text-[8px] font-black text-slate-300 text-center">{d}</div>
+                    <div key={i} className="text-[8px] font-bold text-[#94a3b8] text-center">{d}</div>
                 ))}
              </div>
 
@@ -595,7 +596,7 @@ function StudentModal({ isOpen, student, onClose }) {
                 {monthDays.map((d, index) => (
                     <div key={index} className="aspect-square flex items-center justify-center">
                         {!d ? null : (
-                            <div className={`w-full aspect-square rounded-[8px] flex items-center justify-center text-[10px] font-black transition-all shadow-sm ${
+                            <div className={`w-full aspect-square rounded-[8px] flex items-center justify-center text-[10px] font-bold transition-all shadow-sm ${
                                 d.status === 'Present' ? 'bg-emerald-500 text-white' :
                                 d.status === 'Absent' ? 'bg-rose-500 text-white' :
                                 'bg-amber-400 text-white'
@@ -607,7 +608,7 @@ function StudentModal({ isOpen, student, onClose }) {
                 ))}
              </div>
 
-             <div className="mt-6 flex justify-center gap-4 border-t border-slate-200 pt-5">
+             <div className="mt-6 flex justify-center gap-4 border-t border-[#f1f5f9] pt-5">
                 <div className="flex items-center gap-1.5 ">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                     <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Present</span>
