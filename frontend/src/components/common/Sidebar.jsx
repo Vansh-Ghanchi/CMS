@@ -111,13 +111,13 @@ export default function Sidebar({ onClose }) {
               <button
                 key={item.label}
                 onClick={() => handleNavClick(item.path)}
-                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs transition-all whitespace-nowrap ${
+                className={`w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs transition-all duration-200 active:scale-[0.98] whitespace-nowrap ${
                   isActive 
                   ? 'bg-white text-primary font-black shadow-sm' 
                   : 'text-[#64748B] hover:bg-white/50 hover:text-on-surface font-bold'
                 }`}
               >
-                <item.icon className={`w-5 h-5 shrink-0 ${isActive ? 'text-primary' : 'opacity-60'}`} />
+                <item.icon className={`w-5 h-5 shrink-0 transition-transform duration-200 ${isActive ? 'text-primary scale-110' : 'opacity-60'}`} />
                 {item.label}
               </button>
             );
@@ -130,29 +130,29 @@ export default function Sidebar({ onClose }) {
          <>
          <button 
          onClick={() => setIsSettingsOpen(true)}
-         className="w-full flex items-center justify-center gap-3 py-3.5 bg-primary text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:opacity-90 transition-all border-none mb-2"
+         className="w-full flex items-center justify-center gap-3 py-3.5 bg-primary text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:opacity-95 active:scale-95 transition-all duration-200 border-none mb-2"
          >
             <Settings className="w-4 h-4" />
          System Settings
          </button>
-         <button className="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-xs font-bold text-[#64748B] hover:bg-white/50">
+         <button className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs font-bold text-[#64748B] hover:bg-white/50 hover:text-on-surface transition-all duration-200 active:scale-95">
             <SupportIcon className="w-5 h-5 opacity-40 shrink-0" />
-          Support
+            Support
          </button>
          <button 
-         onClick={() => { logout(); navigate('/login'); }}
-         className="w-full flex items-center gap-4 px-4 py-2 rounded-lg text-xs font-bold text-[#64748B] hover:bg-white/50"
+           onClick={() => { logout(); navigate('/login'); }}
+           className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs font-bold text-[#64748B] hover:bg-white/50 hover:text-on-surface transition-all duration-200 active:scale-95"
          >
-              <LogOut className="w-5 h-5 opacity-40 shrink-0" />
-                Logout
-           </button>
+            <LogOut className="w-5 h-5 opacity-40 shrink-0" />
+            Logout
+         </button>
          </>
          ) : (
          <>
          {!role.startsWith('faculty') && (
          <button 
               onClick={() => setIsSettingsOpen(true)}
-              className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-xs font-bold text-[#64748B] hover:bg-white/50"
+              className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs font-bold text-[#64748B] hover:bg-white/50 hover:text-on-surface transition-all duration-200 active:scale-95"
           >
              <Settings className="w-5 h-5 opacity-60 shrink-0" />
                Settings
@@ -160,9 +160,9 @@ export default function Sidebar({ onClose }) {
          )}
          <button 
              onClick={() => { logout(); navigate('/login'); }}
-               className="w-full flex items-center gap-4 px-4 py-3 rounded-lg text-xs font-bold text-[#64748B] hover:bg-white/50"
-                >
-                     <LogOut className="w-5 h-5 opacity-60 shrink-0" />
+               className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-xs font-bold text-[#64748B] hover:bg-white/50 hover:text-on-surface transition-all duration-200 active:scale-95"
+                 >
+                      <LogOut className="w-5 h-5 opacity-60 shrink-0" />
                 Logout
              </button>
            </>

@@ -20,10 +20,10 @@ export default function Header({ title, sub, showSearch = true, onMenuClick }) {
                <Menu className="w-5 h-5" />
             </button>
             <div className="flex flex-col">
-               <h2 className="text-[18px] md:text-[24px] font-black text-[#1E293B] tracking-tighter leading-none mb-0.5 md:mb-1 truncate max-w-[150px] md:max-w-none">
+               <h2 className="text-xl md:text-2xl font-bold text-[#1E293B] tracking-normal leading-tight mb-0.5 md:mb-1">
                   {title}
                </h2>
-               <p className="text-[10px] md:text-[12px] font-bold text-[#64748B] opacity-60 truncate max-w-[120px] md:max-w-none">
+               <p className="text-[13px] font-medium text-[#64748B] opacity-60 truncate max-w-[120px] md:max-w-none">
                   {sub}
                </p>
             </div>
@@ -32,13 +32,13 @@ export default function Header({ title, sub, showSearch = true, onMenuClick }) {
          <div className="flex items-center gap-8">
             {showSearch && (
               <div className="relative group">
-                 <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-outline opacity-40 group-focus-within:text-primary" />
+                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-outline opacity-40 group-focus-within:text-[#0284c7]" />
                  <input 
                     type="text" 
                     placeholder="Search records..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-80 bg-[#F1F5F9] border-none rounded-full py-3 pl-14 pr-5 text-[11px] font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all text-on-surface placeholder:text-[#64748B]"
+                    className="w-80 bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] outline-none placeholder:text-[#94a3b8] transition-all text-on-surface"
                  />
               </div>
             )}

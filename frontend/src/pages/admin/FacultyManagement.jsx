@@ -123,7 +123,7 @@ export default function FacultyManagement() {
     <AdminLayout>
       <div className="flex flex-col gap-6 md:gap-8">
         <div className="flex flex-col">
-           <h2 className="text-xl md:text-2xl font-black text-[#0B1C30] tracking-tighter leading-tight">Faculty Management</h2>
+           <h2 className="text-xl md:text-2xl font-black text-[#0f172a] tracking-tighter leading-tight">Faculty Management</h2>
            <p className="text-[9px] md:text-[10px] pt-1 font-bold text-slate-400 uppercase tracking-widest italic leading-none">Control authority and system permissions</p>
         </div>
 
@@ -148,15 +148,15 @@ export default function FacultyManagement() {
                    <UserPlus className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                   <h3 className="text-base md:text-lg font-black text-slate-800 tracking-tight uppercase">Faculty Registration</h3>
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Onboard new academic members</p>
+                   <h3 className="text-xl font-bold text-slate-800 tracking-tight uppercase">Faculty Registration</h3>
+                   <p className="text-[13px] font-medium text-slate-400 uppercase tracking-widest leading-none">Onboard new academic members</p>
                 </div>
              </div>
 
              <form onSubmit={handleCreateFaculty} className="space-y-4 md:space-y-5" autoComplete="off">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Full Name</label>
                       <div className="relative">
                          <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -165,12 +165,12 @@ export default function FacultyManagement() {
                            value={registerForm.name}
                            onChange={handleRegisterChange}
                            placeholder="Enter faculty name"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Email Address</label>
                       <div className="relative">
                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -180,15 +180,15 @@ export default function FacultyManagement() {
                            onChange={handleRegisterChange}
                            autoComplete="off"
                            placeholder="faculty@college.com"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Phone Number</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Phone Number</label>
                       <div className="relative">
                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -197,19 +197,19 @@ export default function FacultyManagement() {
                            value={registerForm.phone}
                            onChange={handleRegisterChange}
                            placeholder="+91 9XX XXXXXXX"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Role</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Select Role</label>
                       <div className="relative">
                          <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <select 
                            name="role"
                            value={registerForm.role}
                            onChange={handleRegisterChange}
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-10 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer"
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 pr-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none appearance-none cursor-pointer text-[#0f172a]"
                          >
                            {FACULTY_ROLES.map(role => <option key={role}>{role}</option>)}
                          </select>
@@ -218,8 +218,8 @@ export default function FacultyManagement() {
                    </div>
                 </div>
 
-                <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Employee ID</label>
+                <div className="flex flex-col gap-1">
+                   <label className="text-[13px] font-medium text-[#475569] ml-1">Employee ID</label>
                    <div className="relative">
                       <UserSquare2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input 
@@ -228,13 +228,13 @@ export default function FacultyManagement() {
                         value={registerForm.employeeId}
                         onChange={handleRegisterChange}
                         placeholder="e.g. EMP-2024-001"
-                        className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                        className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                       />
                    </div>
                 </div>
 
-                <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Profile Image</label>
+                <div className="flex flex-col gap-1">
+                   <label className="text-[13px] font-medium text-[#475569] ml-1">Profile Image</label>
                    <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 hover:border-primary/40 transition-all cursor-pointer group relative overflow-hidden">
                       <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-slate-400 group-hover:text-primary transition-colors shrink-0 overflow-hidden border border-slate-100 flex-shrink-0">
                          {registerForm.avatar ? (
@@ -244,7 +244,7 @@ export default function FacultyManagement() {
                          )}
                       </div>
                       <div className="flex-1 min-w-0">
-                         <p className="text-[10px] font-black text-slate-600 uppercase tracking-widest truncate">
+                         <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest truncate">
                            {registerForm.avatar ? "Image selected" : "Click to upload profile photo"}
                          </p>
                          <p className="text-[8px] font-bold text-slate-400 uppercase">JPG, PNG or GIF (MAX. 2MB)</p>
@@ -259,8 +259,8 @@ export default function FacultyManagement() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Password</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Password</label>
                       <div className="relative">
                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -270,12 +270,12 @@ export default function FacultyManagement() {
                            onChange={handleRegisterChange}
                            autoComplete="new-password"
                            placeholder="••••••••"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm Password</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Confirm Password</label>
                       <div className="relative">
                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -284,14 +284,14 @@ export default function FacultyManagement() {
                            value={registerForm.confirmPassword}
                            onChange={handleRegisterChange}
                            placeholder="••••••••"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
                 </div>
 
                 <div className="pt-2">
-                   <button type="submit" className="w-full py-4 bg-primary text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                   <button type="submit" className="w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
                       <UserPlus className="w-4 h-4" />
                       Create Account
                    </button>
@@ -306,21 +306,21 @@ export default function FacultyManagement() {
                    <ShieldAlert className="w-5 h-5 text-rose-500" />
                 </div>
                 <div>
-                   <h3 className="text-base md:text-lg font-black text-slate-800 tracking-tight uppercase">Password Reset</h3>
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Manage security credentials</p>
+                   <h3 className="text-xl font-bold text-slate-800 tracking-tight uppercase">Password Reset</h3>
+                   <p className="text-[13px] font-medium text-slate-400 uppercase tracking-widest leading-none">Manage security credentials</p>
                 </div>
              </div>
 
              <form onSubmit={handleUpdatePassword} className="space-y-4 md:space-y-5">
-                <div className="space-y-1.5">
-                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Faculty</label>
+                <div className="flex flex-col gap-1">
+                   <label className="text-[13px] font-medium text-[#475569] ml-1">Select Faculty</label>
                    <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <select 
                         name="facultyId"
                         value={resetForm.facultyId}
                         onChange={handleResetChange}
-                        className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-10 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none appearance-none cursor-pointer"
+                        className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 pr-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none appearance-none cursor-pointer text-[#0f172a]"
                       >
                         <option value="" hidden>Select a Faculty Member</option>
                         {INITIAL_FACULTIES.map(f => (
@@ -331,8 +331,8 @@ export default function FacultyManagement() {
                    </div>
                  </div>
 
-                 <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+                 <div className="flex flex-col gap-1">
+                    <label className="text-[13px] font-medium text-[#475569] ml-1">Full Name</label>
                     <div className="relative">
                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                        <input 
@@ -342,13 +342,13 @@ export default function FacultyManagement() {
                          onChange={handleResetChange}
                          readOnly
                          placeholder="Select faculty to autofill"
-                         className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none opacity-60 cursor-not-allowed" 
+                         className="w-full bg-slate-50 border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium transition-all outline-none opacity-60 cursor-not-allowed text-[#0f172a]" 
                        />
                     </div>
                  </div>
 
-                 <div className="space-y-1.5">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Role</label>
+                 <div className="flex flex-col gap-1">
+                    <label className="text-[13px] font-medium text-[#475569] ml-1">Select Role</label>
                     <div className="relative">
                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                        <select 
@@ -356,7 +356,7 @@ export default function FacultyManagement() {
                          value={resetForm.role}
                          onChange={handleResetChange}
                          disabled
-                         className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-10 text-xs font-bold transition-all outline-none appearance-none opacity-60 cursor-not-allowed"
+                         className="w-full bg-slate-50 border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 pr-10 text-[14px] font-medium transition-all outline-none appearance-none opacity-60 cursor-not-allowed text-[#0f172a]"
                        >
                          {FACULTY_ROLES.map(role => <option key={role}>{role}</option>)}
                        </select>
@@ -365,8 +365,8 @@ export default function FacultyManagement() {
                  </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">New Password</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">New Password</label>
                       <div className="relative">
                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -375,12 +375,12 @@ export default function FacultyManagement() {
                            value={resetForm.newPassword}
                            onChange={handleResetChange}
                            placeholder="••••••••"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
-                   <div className="space-y-1.5">
-                      <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm Password</label>
+                   <div className="flex flex-col gap-1">
+                      <label className="text-[13px] font-medium text-[#475569] ml-1">Confirm Password</label>
                       <div className="relative">
                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                          <input 
@@ -389,14 +389,14 @@ export default function FacultyManagement() {
                            value={resetForm.confirmPassword}
                            onChange={handleResetChange}
                            placeholder="••••••••"
-                           className="w-full h-11 bg-slate-50 border-none rounded-xl pl-11 pr-4 text-xs font-bold focus:ring-2 focus:ring-primary/20 transition-all outline-none" 
+                           className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all outline-none text-[#0f172a] placeholder:text-[#94a3b8]" 
                          />
                       </div>
                    </div>
                 </div>
 
                 <div className="pt-2">
-                   <button type="submit" className="w-full py-4 bg-[#1E293B] text-white rounded-xl text-[10px] md:text-xs font-black uppercase tracking-[0.2em] shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                   <button type="submit" className="w-full bg-[#0f172a] hover:bg-slate-800 text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-lg">
                       <ShieldAlert className="w-4 h-4" />
                       Update Password
                    </button>

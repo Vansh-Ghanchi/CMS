@@ -1,7 +1,7 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminLayout from "../../layouts/AdminLayout";
-import { Users, CheckCircle, BookOpen, CreditCard, User, X, Mail, Save, Edit2, ChevronDown } from "lucide-react";
+import { Users, CheckCircle, BookOpen, CreditCard, User, X, Mail, Save, Edit2 } from "lucide-react";
 import { 
   BarChart, Bar, 
   PieChart, Pie, Cell, 
@@ -23,17 +23,8 @@ const ENROLLMENT_CATEGORIES = [
 ];
 
 
-const attendanceData = [
-  { name: 'SEP', value: 85 },
-  { name: 'OCT', value: 92 },
-  { name: 'NOV', value: 88 },
-  { name: 'DEC', value: 95 },
-  { name: 'JAN', value: 94 },
-  { name: 'FEB', value: 96 },
-];
-
 const initialFaculties = [
-  { id: 'f1', name: "Sarah Gilbert", title: "STUDENT MANAGEMENT", status: "Active", courses: "24", email: "Student@gmail.com", color: "bg-indigo-600", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
+  { id: 'f1', name: "Sarah Gilbert", title: "STUDENT MANAGEMENT", status: "Active", courses: "24", email: "Student@gmail.com", color: "bg-primary", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
   { id: 'f2', name: "Mark Zuckerberg", title: "ATTENDANCE MANAGEMENT", status: "Active", courses: "12", email: "Attendance@gmail.com", color: "bg-emerald-600", avatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
   { id: 'f3', name: "Elena Salvatore", title: "COURSE MANAGEMENT", status: "Active", courses: "8", email: "Course@gmail.com", color: "bg-rose-600", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
   { id: 'f4', name: "Bruce Wayne", title: "FEES MANAGEMENT", status: "Active", courses: "15", email: "Fees@gmail.com", color: "bg-amber-600", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80" },
@@ -62,20 +53,20 @@ const StatCard = ({ icon: Icon, title, value, badge, color }) => (
 const FacultyCard = ({ name, title, status, courses, color, avatar, onClick }) => (
   <div 
     onClick={onClick}
-    className="bg-white rounded-[24px] p-6 pr-10 flex items-center gap-6 shadow-sm border border-slate-200 shadow-black/5 hover:shadow-lg transition-all cursor-pointer group"
+    className="bg-white rounded-[24px] p-6 pr-10 flex items-center gap-6 shadow-sm border border-slate-200 shadow-black/5 hover:shadow-lg transition-all duration-200 active:scale-95 cursor-pointer group"
   >
-     <div className={`w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-slate-100`}>
+     <div className={`w-16 h-16 rounded-full overflow-hidden border-2 border-white shadow-md bg-slate-100 group-hover:scale-105 transition-transform duration-200`}>
         {avatar ? (
           <img src={avatar} alt={name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-primary font-bold">{name?.[0]}</div>
         )}
      </div>
-     <div className="flex flex-col gap-1.5">
-        <h4 className="text-base font-black text-on-surface leading-none tracking-tight">{name}</h4>
+     <div className="flex flex-col gap-1.5 overflow-hidden">
+        <h4 className="text-base font-black text-on-surface leading-none tracking-tight truncate">{name}</h4>
         <p className="text-[10px] font-bold text-secondary uppercase tracking-widest opacity-60 leading-none">{title}</p>
         <div className="flex items-center gap-4 mt-1">
-           <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest leading-none ${
+           <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest leading-none bg-opacity-10 group-hover:bg-opacity-20 transition-all ${
              status === 'Active' ? 'bg-emerald-50 text-emerald-600' : 'bg-indigo-50 text-primary'
            }`}>{status}</span>
            <span className="text-[9px] font-bold text-secondary">{courses} Courses</span>
@@ -132,7 +123,7 @@ const FacultyModal = ({ isOpen, onClose, faculty, onSave }) => {
           className="bg-white rounded-[32px] w-full max-w-md overflow-hidden shadow-2xl"
         >
           <div className="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-            <h3 className="text-xl font-black text-[#1E293B] tracking-tight">Faculty Details</h3>
+            <h3 className="text-xl font-black text-[#0f172a] tracking-tight">Faculty Details</h3>
             <button onClick={onClose} className="p-2 hover:bg-white rounded-full transition-all text-slate-400 hover:text-slate-600">
               <X className="w-5 h-5" />
             </button>
@@ -153,47 +144,47 @@ const FacultyModal = ({ isOpen, onClose, faculty, onSave }) => {
                 <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
               </div>
               <div className="text-center">
-                <h4 className="text-2xl font-black text-[#1E293B] tracking-tight">{formData.name}</h4>
+                <h4 className="text-2xl font-black text-[#0f172a] tracking-tight">{formData.name}</h4>
                 <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mt-1 opacity-60">{formData.title}</p>
               </div>
             </div>
 
             <div className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Full Name</label>
+              <div className="flex flex-col gap-1">
+                <label className="text-[13px] font-medium text-[#475569] ml-1">Full Name</label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
                     type="text" 
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all text-on-surface"
+                    className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all text-on-surface"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Module / Role</label>
+              <div className="flex flex-col gap-1">
+                <label className="text-[13px] font-medium text-[#475569] ml-1">Module / Role</label>
                 <div className="relative">
-                  <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
                     type="text" 
                     value={formData.title}
                     onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all text-on-surface"
+                    className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all text-on-surface"
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Email Address</label>
+              <div className="flex flex-col gap-1">
+                <label className="text-[13px] font-medium text-[#475569] ml-1">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input 
                     type="email" 
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full bg-slate-50 border-none rounded-xl py-3.5 pl-12 pr-4 text-sm font-bold outline-none focus:ring-2 focus:ring-primary/20 transition-all text-on-surface"
+                    className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all text-on-surface"
                   />
                 </div>
               </div>
@@ -201,7 +192,7 @@ const FacultyModal = ({ isOpen, onClose, faculty, onSave }) => {
 
             <button 
               onClick={handleSave}
-              className="w-full py-4 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-3"
+              className="w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
             >
               <Save className="w-4 h-4" />
               Save Changes
@@ -293,8 +284,8 @@ export default function AdminHome() {
       {/* Page Title & Actions */}
       <div className="mb-14 flex items-end justify-between">
         <div>
-           <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-4">MANAGEMENT PORTAL</p>
-           <h2 className="text-6xl font-black text-[#0B1C30] tracking-tighter leading-none">System Overview</h2>
+           <p className="text-[10px] font-bold text-primary uppercase tracking-widest mb-4">MANAGEMENT PORTAL</p>
+           <h2 className="text-4xl font-bold text-[#0f172a] tracking-tight leading-normal">System Overview</h2>
         </div>
         <div className="flex gap-4">
         </div>
@@ -302,10 +293,10 @@ export default function AdminHome() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-10 md:mb-14">
-        <StatCard title="Total Students" value={statsValues.students} badge="+12.5%" icon={Users} color="bg-indigo-600" />
+        <StatCard title="Total Students" value={statsValues.students} badge="+12.5%" icon={Users} color="bg-primary" />
         <StatCard title="Attendance %" value={statsValues.attendance} badge="Optimal" icon={CheckCircle} color="bg-emerald-600" />
         <StatCard title="Total Courses" value={statsValues.courses} badge={statsValues.activeCourses} icon={BookOpen} color="bg-amber-600" />
-        <StatCard title="Fees Collected" value={statsValues.fees} badge="Target Met" icon={CreditCard} color="bg-indigo-600" />
+        <StatCard title="Fees Collected" value={statsValues.fees} badge="Target Met" icon={CreditCard} color="bg-primary" />
       </div>
 
       {/* Middle Grid: Charts */}
@@ -314,14 +305,14 @@ export default function AdminHome() {
         <div className="lg:col-span-2 bg-white rounded-[32px] md:rounded-[40px] p-6 md:p-12 border border-slate-200 shadow-sm shadow-black/5 min-h-[400px] md:min-h-[500px]">
            <div className="flex justify-between items-start mb-14">
               <div>
-                 <h3 className="text-2xl font-black text-on-surface tracking-tight mb-2">Fee Collection Trends</h3>
-                 <p className="text-xs font-bold text-secondary opacity-60">Projection vs Actual Collection for FY 2025-26</p>
+                 <h3 className="text-xl font-bold text-on-surface tracking-tight mb-2">Fee Collection Trends</h3>
+                 <p className="text-[13px] font-medium text-secondary opacity-60">Projection vs Actual Collection for FY 2025-26</p>
               </div>
            </div>
            
            <div className="overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
               <div className="h-80 min-w-[1200px]">
-                 <ResponsiveContainer width="100%" height="100%">
+                 <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                     <AreaChart data={feeTrends} margin={{ top: 10, right: 30, left: 20, bottom: 20 }}>
                        <defs>
                          <linearGradient id="colorWave" x1="0" y1="0" x2="0" y2="1">
@@ -333,16 +324,16 @@ export default function AdminHome() {
                        <XAxis 
                           dataKey="name" 
                           fontSize={10} 
-                          fontWeight={900} 
+                          fontWeight={700} 
                           axisLine={false} 
                           tickLine={false} 
                           dy={10}
                        >
-                          <Label value="Time (Months / Year)" offset={-15} position="insideBottom" fontSize={9} fontWeight={900} fill="#94A3B8" />
+                          <Label value="Time (Months / Year)" offset={-15} position="insideBottom" fontSize={9} fontWeight={700} fill="#94A3B8" />
                        </XAxis>
                        <YAxis 
                           fontSize={10} 
-                          fontWeight={900} 
+                          fontWeight={700} 
                           axisLine={false} 
                           tickLine={false} 
                           tickFormatter={(value) => {
@@ -351,13 +342,13 @@ export default function AdminHome() {
                               return `₹${value}`;
                            }}
                        >
-                          <Label value="Amount Collected (₹)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={10} fontSize={9} fontWeight={900} fill="#94A3B8" />
+                          <Label value="Amount Collected (₹)" angle={-90} position="insideLeft" style={{ textAnchor: 'middle' }} offset={10} fontSize={9} fontWeight={700} fill="#94A3B8" />
                        </YAxis>
                         <Tooltip 
                            cursor={{ stroke: '#4F46E5', strokeWidth: 1 }} 
                            contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 40px rgba(0,0,0,0.05)', padding: '12px' }}
-                           itemStyle={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}
-                           labelStyle={{ fontSize: '10px', fontWeight: 900, marginBottom: '4px', color: '#64748B' }}
+                           itemStyle={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase' }}
+                           labelStyle={{ fontSize: '10px', fontWeight: 700, marginBottom: '4px', color: '#64748B' }}
                            formatter={(value, name) => [`₹${value.toLocaleString()}`, name === 'actual' ? "Actual Collection" : "Projected Goal"]}
                         />
                         <Legend 
@@ -369,7 +360,7 @@ export default function AdminHome() {
                                  {payload.map((entry, index) => (
                                     <div key={`item-${index}`} className="flex items-center gap-2">
                                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.color }} />
-                                       <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                       <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
                                           {entry.dataKey === 'actual' ? "Actual Collection" : "Projected Goal"}
                                        </span>
                                     </div>
@@ -406,12 +397,12 @@ export default function AdminHome() {
         {/* Student Enrollment Donut */}
         <div className="bg-[#EFF4FF] rounded-[32px] md:rounded-[40px] p-6 md:p-12 border border-blue-100 shadow-sm shadow-black/5 flex flex-col min-h-[400px] md:min-h-[500px]">
            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 w-full">
-              <h3 className="text-xl md:text-2xl font-black text-[#0B1C30] tracking-tight truncate">Student Enrollment</h3>
-              <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
+              <h3 className="text-xl font-bold text-[#0f172a] tracking-tight truncate">Student Enrollment</h3>
+              <div className="flex gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0 scrollbar-hide">
                  <select 
                    value={enrollmentYear} 
                    onChange={(e) => setEnrollmentYear(Number(e.target.value))}
-                   className="flex-1 sm:flex-none bg-white/50 border-none outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none min-w-[80px]"
+                   className="flex-1 sm:flex-none bg-white border border-blue-100/50 outline-none text-[9px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none min-w-[80px] hover:bg-white/80 transition-all duration-200 focus:ring-4 focus:ring-primary/10"
                  >
                     <option value="2025">2025</option>
                     <option value="2026">2026</option>
@@ -419,7 +410,7 @@ export default function AdminHome() {
                  <select 
                    value={enrollmentMonth} 
                    onChange={(e) => setEnrollmentMonth(Number(e.target.value))}
-                   className="flex-1 sm:flex-none bg-white/50 border-none outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none min-w-[100px]"
+                   className="flex-1 sm:flex-none bg-white border border-blue-100/50 outline-none text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg cursor-pointer appearance-none min-w-[100px] hover:bg-white/80 transition-all duration-200 focus:ring-4 focus:ring-primary/10"
                  >
                     {MONTHS.map((m, i) => (
                       <option key={m} value={i}>{m}</option>
@@ -429,11 +420,11 @@ export default function AdminHome() {
            </div>
            
            <div className="relative w-full h-[200px] md:h-[240px] flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                  <PieChart>
                     <Tooltip 
                         contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 40px rgba(0,0,0,0.05)', padding: '12px' }}
-                        itemStyle={{ color: '#1E293B', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}
+                        itemStyle={{ color: '#0f172a', fontSize: '11px', fontWeight: 900, textTransform: 'uppercase' }}
                         formatter={(value, name) => [`${value}%`, name]}
                      />
                     <Pie
@@ -489,7 +480,7 @@ export default function AdminHome() {
         </div>
         <div className="overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
            <div className="h-64 min-w-[800px] md:min-w-[1500px]">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={0}>
                  <BarChart data={attendanceTrends}>
                     <XAxis dataKey="name" fontSize={9} fontWeight={900} axisLine={false} tickLine={false} dy={15} />
                     <Tooltip 
@@ -504,7 +495,7 @@ export default function AdminHome() {
                         radius={[6, 6, 0, 0]} 
                         barSize={24}
                         shape={(props) => {
-                            const { fill, x, y, width, height } = props;
+                            const { x, y, width, height } = props;
                             // Dynamic color based on attendance %
                             const color = props.value >= 90 ? '#10B981' : (props.value >= 80 ? '#4F46E5' : '#F59E0B');
                             return <rect x={x} y={y} width={width} height={height} fill={color} rx={4} ry={4} />;
@@ -519,7 +510,7 @@ export default function AdminHome() {
       {/* Faculty Section */}
       <div className="space-y-8 md:space-y-10">
          <div className="flex justify-between items-end">
-            <h3 className="text-2xl md:text-3xl font-black text-[#0B1C30] tracking-tighter leading-none">Faculty Overview</h3>
+            <h3 className="text-2xl md:text-3xl font-black text-[#0f172a] tracking-tight leading-none">Faculty Overview</h3>
          </div>
          
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">

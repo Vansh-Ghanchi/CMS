@@ -88,7 +88,7 @@ export default function ProfileModal({ isOpen, onClose }) {
           {/* Header */}
           <div className="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center shrink-0">
             <div>
-               <h3 className="text-xl font-black text-[#1E293B] tracking-tight">Admin Settings</h3>
+               <h3 className="text-xl font-bold text-[#1E293B] tracking-tight">Admin Settings</h3>
                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Configure your portal credentials</p>
             </div>
             <button 
@@ -106,7 +106,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                    <button 
                      key={tab}
                      onClick={() => setActiveTab(tab)}
-                     className={`pb-4 text-[10px] font-black uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`}
+                     className={`pb-4 text-[10px] font-bold uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-primary' : 'text-slate-400 hover:text-slate-600'}`}
                    >
                       {tab} section
                       {activeTab === tab && <motion.div layoutId="tab-active" className="absolute bottom-0 left-0 right-0 h-1 bg-primary rounded-full" />}
@@ -138,7 +138,7 @@ export default function ProfileModal({ isOpen, onClose }) {
                                <input type="file" ref={fileInputRef} onChange={handleImageChange} accept="image/*" className="hidden" />
                             </div>
                             <div className="flex flex-col">
-                               <h4 className="text-lg font-black text-[#1E293B] tracking-tight">Identity & Vision</h4>
+                               <h4 className="text-xl font-bold text-[#1E293B] tracking-tight">Identity & Vision</h4>
                                <p className="text-xs font-bold text-slate-500 leading-relaxed max-w-[200px]">Update your public profile information across the system.</p>
                             </div>
                          </div>
@@ -150,7 +150,7 @@ export default function ProfileModal({ isOpen, onClose }) {
 
                          <button 
                            onClick={handleSaveProfile}
-                           className="w-full h-14 bg-primary text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-primary/20 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                           className="w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
                          >
                             <Save className="w-4 h-4" />
                             Save Profile Changes
@@ -179,7 +179,7 @@ export default function ProfileModal({ isOpen, onClose }) {
 
                          <button 
                            onClick={handleSavePassword}
-                           className="w-full h-14 bg-on-surface text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-on-surface/10 hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3"
+                           className="w-full bg-slate-50 hover:bg-slate-100 text-[#0f172a] border border-[#e2e8f0] font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2"
                          >
                             <Lock className="w-4 h-4" />
                             Update Security Key
@@ -214,16 +214,16 @@ export default function ProfileModal({ isOpen, onClose }) {
 
 function InputGroup({ label, placeholder, value, onChange, icon: Icon, type = "text" }) {
   return (
-    <div className="space-y-2">
-       <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{label}</label>
+    <div className="flex flex-col gap-1">
+       <label className="text-[13px] font-medium text-[#475569] ml-1">{label}</label>
        <div className="relative">
-          <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
+          <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
           <input 
             type={type}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-slate-50 border-none rounded-2xl h-12 pl-12 pr-4 text-xs font-bold outline-none focus:ring-4 focus:ring-primary/5 transition-all text-[#1E293B]"
+            className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all text-[#1E293B] placeholder:text-[#94a3b8]"
           />
        </div>
     </div>

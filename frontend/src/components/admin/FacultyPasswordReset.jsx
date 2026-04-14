@@ -59,13 +59,13 @@ export default function FacultyPasswordReset() {
 
         {isExpanded && (
           <div className="p-6 pt-0 flex flex-col gap-4 border-t border-slate-50">
-            <div className="space-y-1.5 pt-4">
-              <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Select Faculty</label>
+            <div className="flex flex-col gap-1 pt-4">
+              <label className="text-[13px] font-medium text-[#475569] ml-1">Select Faculty Member</label>
               <div className="relative">
                 <select 
                   value={selectedFaculty}
                   onChange={(e) => setSelectedFaculty(e.target.value)}
-                  className="w-full h-10 bg-slate-50 border-none rounded-xl px-4 text-[11px] font-bold outline-none cursor-pointer appearance-none transition-all focus:ring-2 focus:ring-primary/10"
+                  className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 text-[14px] font-medium outline-none cursor-pointer appearance-none transition-all focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] text-[#0f172a]"
                 >
                   <option value="">Select a faculty member...</option>
                   {faculties.map(f => (
@@ -77,8 +77,8 @@ export default function FacultyPasswordReset() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">New Password</label>
+              <div className="flex flex-col gap-1">
+                <label className="text-[13px] font-medium text-[#475569] ml-1">New Password</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
                   <input 
@@ -86,12 +86,12 @@ export default function FacultyPasswordReset() {
                     placeholder="••••••••"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full h-10 bg-slate-50 border-none rounded-xl pl-8 pr-4 text-[11px] font-bold outline-none focus:ring-2 focus:ring-primary/10"
+                    className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
                   />
                 </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest ml-1">Confirm</label>
+              <div className="flex flex-col gap-1">
+                <label className="text-[13px] font-medium text-[#475569] ml-1">Confirm</label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400" />
                   <input 
@@ -99,7 +99,7 @@ export default function FacultyPasswordReset() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full h-10 bg-slate-50 border-none rounded-xl pl-8 pr-4 text-[11px] font-bold outline-none focus:ring-2 focus:ring-primary/10"
+                    className="w-full bg-white border border-[#f1f5f9] rounded-xl px-4 py-2.5 pl-10 text-[14px] font-medium outline-none focus:ring-4 focus:ring-[#0284c7]/10 focus:border-[#0284c7] transition-all placeholder:text-[#94a3b8] text-[#0f172a]"
                   />
                 </div>
               </div>
@@ -121,7 +121,7 @@ export default function FacultyPasswordReset() {
 
             <button 
               onClick={handleUpdate}
-              className="w-full h-10 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2"
+              className="w-full bg-[#0284c7] hover:bg-[#0369a1] text-white font-medium rounded-xl px-4 py-2.5 transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 shadow-xl shadow-primary/20"
             >
               <RefreshCw className={`w-3 h-3 ${success ? 'animate-spin' : ''}`} />
               Update Password
