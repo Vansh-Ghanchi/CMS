@@ -14,7 +14,7 @@ import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 import { cardVariants, buttonVariants, staggerContainer, tableRowVariants } from "../../../utils/motion";
 
-export default function AttendanceManagement({ hideStats = false }) {
+export default function AttendanceManagement({noLayout = false, hideStats = false }) {
   const { students: ALL_STUDENTS, attendanceLogs: ATTENDANCE_LOGS, setAttendanceLogs } = useAdminData();
   const [currentPage, setCurrentPage] = useState(1);
   const [sorting, setSorting] = useState([]);
@@ -189,14 +189,13 @@ export default function AttendanceManagement({ hideStats = false }) {
   const rows = table.getRowModel().rows;
   const currentStudentsRows = rows.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-
-  return (
-    <AdminLayout>
+const content = (
+  <>
       <div className="flex flex-col gap-8">
         {/* Header */}
         <div>
-          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Attendance Management</h2>
-          <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Monitor and manage student attendance</p>
+          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Monitor and manage student attendance</h2>
+          {/* <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Monitor and manage student attendance</p> */}
         </div>
 
         {/* Dynamic Stats Cards */}
@@ -346,7 +345,7 @@ export default function AttendanceManagement({ hideStats = false }) {
                       <tr
                         key={row.id}
                         onClick={() => setSelectedStudent(row.original)}
-                        className={`group hover:bg-[#f8fafc] transition-all cursor-pointer ${selectedStudent?.id === row.original.id ? 'bg-[#0284c7]/5' : ''}`}
+                        className={`group hover:bg-[#f8fafc] transition-all cursor-pointer ${selectedStudent?.studentId === row.original.studentId ? 'bg-[#0284c7]/5' : ''}`}
                       >
                         {row.getVisibleCells().map(cell => (
                           <td key={cell.id} className="py-4 md:py-6 px-6 md:px-8">
@@ -428,8 +427,9 @@ export default function AttendanceManagement({ hideStats = false }) {
         student={selectedStudent}
         onClose={() => setSelectedStudent(null)}
       />
-    </AdminLayout>
+    </>
   );
+  return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
 
 // Subcomponents

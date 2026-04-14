@@ -12,7 +12,7 @@ import {
   BarChart2,
   AlertCircle
 } from "lucide-react";
-
+import AttendanceManagement from "../../admin/attendance/AttendanceManagement";
 const AttendanceRow = ({ name, status, date }) => (
   <tr className="border-b border-[#f1f5f9] hover:bg-[#f8fafc] transition-all duration-200 cursor-pointer group">
     <td className="py-5 px-8">

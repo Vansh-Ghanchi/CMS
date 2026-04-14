@@ -12,7 +12,7 @@ import {
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
-export default function FeesManagement({hideStats = false }) {
+export default function FeesManagement({noLayout = false, hideStats = false }) {
   const { fees, setFees } = useAdminData();
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -210,12 +210,14 @@ export default function FeesManagement({hideStats = false }) {
 
   const courseOptions = [...new Set(fees.map(s => s.course))];
 
-  return (
-    <AdminLayout>
+
+const content = (
+  <>
+   
       <div className="flex flex-col gap-8">
         <div>
-          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Fees Management</h2>
-          <p className="text-[13px] font-bold text-slate-400 mt-1 uppercase tracking-widest opacity-60">Track student payments and financial records</p>
+          <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Track student payments and financial records</h2>
+        
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
@@ -388,8 +390,9 @@ export default function FeesManagement({hideStats = false }) {
         </AnimatePresence>
         </div>
 
-    </AdminLayout>
+    </>
   );
+   return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
 
 function SubTable({ data, columns }) {

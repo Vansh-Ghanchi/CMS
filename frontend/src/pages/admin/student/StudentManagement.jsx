@@ -180,7 +180,7 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, studentName }) =>
   );
 };
 
-export default function StudentManagement({ hideStats = false }) {
+export default function StudentManagement({ noLayout = false, hideStats = false }){
   const { searchQuery, setSearchQuery } = useSearch();
   const [localSearch, setLocalSearch] = useState("");
   const { students, setStudents } = useAdminData();
@@ -604,6 +604,6 @@ const matchesCourse = !courseFilter || s.course === courseFilter;
       />
     </>
   );
-  return <AdminLayout>{content}</AdminLayout>;
+return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 }
 

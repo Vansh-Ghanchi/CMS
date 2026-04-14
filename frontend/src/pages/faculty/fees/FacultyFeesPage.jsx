@@ -14,7 +14,7 @@ import {
   BellRing,
   HelpCircle
 } from "lucide-react";
-
+import FeesManagement from "../../admin/fees/FeesManagement";
 const TransactionRow = ({ name, id, date, amount, status }) => (
   <tr className="border-b border-[#f1f5f9] hover:bg-[#f8fafc] transition-all duration-200 cursor-pointer group">
     <td className="py-5 px-8">

@@ -1,7 +1,7 @@
 import FacultyLayout from "../../../layouts/FacultyLayout";
 import { Users, UserPlus, Filter, Download, User, MoreVertical, Plus, Search } from "lucide-react";
 import { motion } from "framer-motion";
-
+import StudentManagement from "../../admin/student/StudentManagement";
 const StudentRow = ({ name, id, email, phone, course, year, status }) => (
   <tr className="border-b border-[#f1f5f9] hover:bg-[#f8fafc] transition-all duration-200 cursor-pointer group">
     <td className="py-5 px-8">

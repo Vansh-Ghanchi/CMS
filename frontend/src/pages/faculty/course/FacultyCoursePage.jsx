@@ -14,7 +14,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-
+import CourseManagement from "../../admin/course/CourseManagement";
 const CourseRow = ({ name, id, level, duration, fees, enrollment, maxEnrollment, status, progress }) => (
   <tr className="border-b border-[#f1f5f9] hover:bg-[#f8fafc] transition-all cursor-pointer group">
     <td className="py-5 px-8">

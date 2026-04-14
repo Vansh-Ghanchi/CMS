@@ -11,7 +11,7 @@ import {
 import { useAdminData } from "../../../context/AdminDataContext";
 import { InfinityLoader } from "../../../components/ui/loader-13";
 
-export default function CourseManagement({}) {
+export default function CourseManagement({noLayout = false, hideStats = false }) {
   const { students, courses, setCourses } = useAdminData();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -193,15 +193,15 @@ export default function CourseManagement({}) {
 
   const facultyOptions = ["All Faculty", ...new Set(courses.map(c => c.faculty))];
 
-
-  return (
-    <AdminLayout>
+const content = (
+  <>
+   
       <div className="flex flex-col gap-8">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Course Management</h2>
-            <p className="text-[13px] font-medium text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p>
+            <h2 className="text-3xl font-bold text-[#0f172a] tracking-normal leading-normal">Manage academic programs and faculty assignments</h2>
+            {/* <p className="text-[13px] font-medium text-slate-400 mt-1 uppercase tracking-widest">Manage academic programs and faculty assignments</p> */}
           </div>
         </div>
 
@@ -385,8 +385,9 @@ export default function CourseManagement({}) {
           )}
         </AnimatePresence>
       </div>
-    </AdminLayout>
+    </>
   );
+    return noLayout ? content : <AdminLayout>{content}</AdminLayout>;
 
 }
 
