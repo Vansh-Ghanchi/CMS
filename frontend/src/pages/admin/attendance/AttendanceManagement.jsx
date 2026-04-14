@@ -314,10 +314,7 @@ export default function AttendanceManagement({ noLayout = false, hideStats = fal
           <h3 className="text-lg md:text-xl font-black text-[#1E293B] tracking-tight truncate">
             Students List {filters.date ? `- ${new Date(filters.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}` : ''}
           </h3>
-          <button className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all w-full sm:w-auto justify-center">
-            <Download className="w-3.5 h-3.5" />
-            Export
-          </button>
+
         </div>
 
         <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-slate-200">
