@@ -6,6 +6,7 @@ export default function StudentActions() {
   const { students, setStudents, courses } = useAdminData();
 
   const [addData, setAddData] = useState({
+    studentId: '',
     name: '',
     email: '',
     phone: '',
@@ -35,13 +36,23 @@ export default function StudentActions() {
   const handleAddSubmit = (e) => {
     e.preventDefault();
 
-    if (!addData.name || !addData.email || !addData.course) {
+    const cleanId = addData.studentId.trim().toUpperCase();
+
+    if (!cleanId || !addData.name || !addData.email || !addData.course) {
       return showMessage('error');
+    }
+
+    const exists = students.some(
+      s => s.studentId.toLowerCase() === cleanId.toLowerCase()
+    );
+
+    if (exists) {
+      return showMessage('duplicate');
     }
 
     const newStudent = {
       ...addData,
-      studentId: `STU-${Date.now().toString().slice(-4)}`,
+      studentId: cleanId,
       admissionDate: new Date().toLocaleDateString(),
       institute: courses.find(c => c.name === addData.course)?.institute || 'GIT',
       avatar: `https://i.pravatar.cc/150?u=${Date.now()}`
@@ -51,6 +62,7 @@ export default function StudentActions() {
     showMessage('added');
 
     setAddData({
+      studentId: '',
       name: '',
       email: '',
       phone: '',
@@ -64,7 +76,9 @@ export default function StudentActions() {
   const handleFetchStudent = () => {
     if (!updateData.studentId) return showMessage('no-id');
 
-    const student = students.find(s => s.studentId === updateData.studentId);
+    const student = students.find(
+      s => s.studentId.toLowerCase() === updateData.studentId.toLowerCase()
+    );
 
     if (!student) return showMessage('not-found');
 
@@ -88,7 +102,10 @@ export default function StudentActions() {
     if (!updateData.studentId) return showMessage('no-id');
 
     setStudents(prev => {
-      const index = prev.findIndex(s => s.studentId === updateData.studentId);
+      const index = prev.findIndex(
+        s => s.studentId.toLowerCase() === updateData.studentId.toLowerCase()
+      );
+
       if (index === -1) return prev;
 
       const updated = [...prev];
@@ -127,6 +144,13 @@ export default function StudentActions() {
 
         <form onSubmit={handleAddSubmit} className="grid md:grid-cols-2 gap-6">
 
+          <Input
+            label="Student ID"
+            placeholder="Enter student ID (e.g. STU-001)"
+            value={addData.studentId}
+            onChange={v => setAddData({ ...addData, studentId: v.toUpperCase() })}
+          />
+
           <Input label="Full Name" placeholder="Enter full name" value={addData.name} onChange={v => setAddData({ ...addData, name: v })} />
           <Input label="Email" placeholder="Enter email address" value={addData.email} onChange={v => setAddData({ ...addData, email: v })} />
           <Input label="Phone" placeholder="Enter phone number" value={addData.phone} onChange={v => setAddData({ ...addData, phone: v })} />
@@ -156,7 +180,7 @@ export default function StudentActions() {
         <div className="flex gap-3 mb-6">
           <input
             value={updateData.studentId}
-            onChange={(e) => setUpdateData({ ...updateData, studentId: e.target.value })}
+            onChange={(e) => setUpdateData({ ...updateData, studentId: e.target.value.toUpperCase() })}
             placeholder="Enter Student ID"
             className="w-full h-12 bg-[#F8FAFC] rounded-2xl px-5 text-sm font-bold"
           />
@@ -187,6 +211,7 @@ export default function StudentActions() {
           {message === 'added' && "Student Added ✅"}
           {message === 'updated' && "Student Updated 🔄"}
           {message === 'fetched' && "Data Loaded ✅"}
+          {message === 'duplicate' && "Student ID already exists ❌"}
           {message === 'error' && "Fill required fields ❌"}
           {message === 'not-found' && "Student not found ❌"}
           {message === 'no-id' && "Enter Student ID ❌"}
