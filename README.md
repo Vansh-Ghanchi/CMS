@@ -39,20 +39,6 @@ The **College Management System (CMS)** is a professional, full-stack applicatio
 - **Backend**: Python FastAPI + SQLAlchemy
 - **Database**: PostgreSQL (Production-ready)
 - **Auth**: JWT (JSON Web Tokens) with secure HTTP interceptors
-
----
-
-## 📸 Screenshots
-
-### 📊 Admin Dashboard
-![Dashboard](assets/dashboard.png)
-
-### 💳 Fees Management & Credit System
-![Fees](assets/fees.png)
-
-### 👥 Student Records
-![Students](assets/students.png)
-
 ---
 
 ## ⚙️ Setup Instructions
